@@ -1,3 +1,5 @@
+import { onTemanUiRefresh, requestTemanUiRefresh } from './ui-refresh';
+
 type Locale = 'ms' | 'en' | 'ar';
 
 type BeforeInstallPromptEvent = Event & {
@@ -167,6 +169,7 @@ export function initUxEnhancements() {
     } else if (nav === 'profile') {
       clickAfterHome('.profileFeature');
     }
+    requestTemanUiRefresh();
   });
 
   const closeOfficerOverlay = async () => {
@@ -285,8 +288,7 @@ export function initUxEnhancements() {
     noteTimer = window.setTimeout(() => localStorage.setItem('teman-notes', value), 350);
   });
 
-  const observer = new MutationObserver(updateState);
-  observer.observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['lang', 'dir'] });
+  onTemanUiRefresh(updateState);
   labels();
   window.setTimeout(updateState, 0);
 }
