@@ -1,0 +1,38 @@
+.locationToolCard{
+  margin:18px 0 4px;
+  padding:20px;
+  border:2px solid #c7dccf;
+  border-radius:24px;
+  background:linear-gradient(145deg,#f8fcf9,#edf6f0);
+  box-shadow:0 10px 26px rgba(26,69,50,.08);
+}
+.locationToolHead{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.locationToolHead>div{min-width:0}
+.locationToolHead strong,.locationToolHead span{display:block}
+.locationToolHead strong{font-size:18px;color:#0b5d3b;letter-spacing:.02em}
+.locationToolHead span{margin-top:5px;color:#566d60;font-size:15px;line-height:1.45}
+.locationToolHead>b{flex:none;width:44px;height:44px;border-radius:15px;background:#0b5d3b;color:#fff;display:grid;place-items:center;font-size:25px;box-shadow:0 6px 16px rgba(11,93,59,.16)}
+.locationPrimary{width:100%;min-height:64px;margin-top:16px;border:0;border-radius:17px;background:#0b5d3b;color:#fff;font-size:17px;font-weight:950;padding:14px 16px;cursor:pointer;box-shadow:0 8px 20px rgba(11,93,59,.16)}
+.locationPrimary:disabled{opacity:.65;cursor:wait}
+.locationReadout{margin-top:14px;padding:16px;border:1px solid #c8dccf;border-radius:18px;background:#fff}
+.locationReadout[hidden],.locationActions[hidden]{display:none}
+.locationReadout span,.locationReadout strong,.locationReadout small{display:block;overflow-wrap:anywhere}
+.locationReadout span{font-size:13px;font-weight:900;color:#5a7064;letter-spacing:.025em}
+.locationReadout strong{margin-top:5px;font-size:clamp(23px,6vw,32px);line-height:1.15;color:#153d2d;font-variant-numeric:tabular-nums}
+.locationReadout small{margin-top:7px;font-size:13px;line-height:1.45;color:#607467}
+.locationActions{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:9px;margin-top:11px}
+.locationActions button{min-width:0;min-height:56px;border:2px solid #0b5d3b;border-radius:15px;background:#fff;color:#0b5d3b;font-size:14px;font-weight:900;padding:10px 9px;cursor:pointer;overflow-wrap:anywhere}
+.locationActions button:first-child{background:#0b5d3b;color:#fff}
+.locationStatus{min-height:0;margin:11px 0 0;color:#8a3e1f;font-weight:800;line-height:1.4}
+.locationStatus:empty{display:none}
+.locationPrivacy{margin:11px 0 0;color:#65796e;font-size:12px;line-height:1.45}
+.temanLocationFact{border-color:#b7d8c2!important;background:#e8f5ec!important}
+.temanLocationFact strong{font-variant-numeric:tabular-nums}
+
+@media(max-width:520px){
+  .locationToolCard{padding:16px;border-radius:20px}
+  .locationActions{grid-template-columns:1fr}
+  .locationActions button{min-height:54px}
+}
+
+[dir='rtl'] .locationToolHead>div,[dir='rtl'] .locationReadout{text-align:right}
