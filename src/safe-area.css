@@ -1,0 +1,22 @@
+/* iOS Home Screen / PWA safe-area handling.
+   Keeps the sticky TEMAN header below the status bar without changing
+   the normal browser layout on devices that report zero safe-area inset. */
+
+.shell {
+  min-height: 100dvh;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.topbar {
+  padding-top: calc(14px + env(safe-area-inset-top, 0px));
+  padding-left: max(20px, env(safe-area-inset-left, 0px));
+  padding-right: max(20px, env(safe-area-inset-right, 0px));
+}
+
+@media (max-width: 640px) {
+  .topbar {
+    padding-top: calc(12px + env(safe-area-inset-top, 0px));
+    padding-left: max(12px, env(safe-area-inset-left, 0px));
+    padding-right: max(12px, env(safe-area-inset-right, 0px));
+  }
+}
