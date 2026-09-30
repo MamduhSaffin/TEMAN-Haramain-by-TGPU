@@ -10,22 +10,71 @@
   overflow:hidden;
 }
 
-.brand>div:last-child{
-  display:none;
-}
+.brand>div:last-child{display:none}
+.brand{min-width:132px}
 
-.brand{
-  min-width:132px;
-}
+.heroTop{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.networkStatus{display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:7px 11px;border-radius:999px;font-size:13px;font-weight:900;letter-spacing:.02em;border:1px solid #bad8c4;background:#e7f4eb;color:#0b5d3b}
+.networkStatus.offline{background:#fff4dc;border-color:#ead39a;color:#6b4b12}
+.networkStatus svg{flex:none}
+
+.featureGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.featureGrid .feature{min-height:142px;position:relative;border:1px solid rgba(255,255,255,.18)}
+.featureGrid .translateFeature{background:linear-gradient(145deg,#5f48a6,#744eb1)}
+.featureGrid .ibadahFeature{background:linear-gradient(145deg,#0b7049,#0b5d3b)}
+.featureGrid .notesFeature{background:linear-gradient(145deg,#385e9d,#4357a1)}
+.featureGrid .currencyFeature{background:linear-gradient(145deg,#b9770e,#cf8b13)}
+.featureGrid .profileFeature{background:linear-gradient(145deg,#31584a,#24463a);grid-column:1/-1;min-height:112px}
+.featureGrid .feature::after{content:'';position:absolute;inset:auto -36px -54px auto;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.06);pointer-events:none}
+
+.shareRow{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:12px}
+.shareRow button{min-height:64px;border:2px solid #0b5d3b;border-radius:17px;background:#fff;color:#0b5d3b;font-weight:900;font-size:15px;padding:13px;display:flex;align-items:center;justify-content:center;gap:9px;cursor:pointer}
+.shareRow button:first-child{background:#0b5d3b;color:#fff}
+.shareRow button svg{flex:none}
+
+.toolCard{background:#fff;border:1px solid #d9e5dc;border-radius:26px;padding:22px;box-shadow:0 12px 30px rgba(31,75,55,.08)}
+.toolLabel{display:block;font-weight:900;font-size:17px;margin-bottom:10px;color:#214b37}
+.notesCard textarea{width:100%;min-height:260px;resize:vertical;border:2px solid #c7d6cc;border-radius:18px;padding:16px;font:inherit;font-size:18px;line-height:1.55;color:#173b2d;background:#fbfdfb}
+.notesCard textarea:focus{outline:4px solid #f0c85a;outline-offset:3px;border-color:#0b5d3b}
+.notesCard textarea::placeholder{color:#7a8d82}
+
+.directionSwitch{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:#eef4f0;border-radius:17px;padding:5px;margin-bottom:20px}
+.directionSwitch button{min-height:56px;border:0;border-radius:13px;background:transparent;color:#315342;font-weight:900;font-size:17px;cursor:pointer}
+.directionSwitch button.active{background:#0b5d3b;color:#fff;box-shadow:0 5px 16px rgba(11,93,59,.18)}
+.currencyField{display:block;margin:17px 0}
+.currencyField>span{display:block;font-weight:900;font-size:16px;color:#405c4d;margin-bottom:9px}
+.currencyField small{display:block;margin-top:8px;color:#607467;font-size:14px;line-height:1.4}
+.currencyInput{display:flex;align-items:center;gap:10px;border:2px solid #c7d6cc;border-radius:17px;background:#fbfdfb;padding:7px 12px;min-height:62px}
+.currencyInput:focus-within{border-color:#0b5d3b;outline:4px solid #f0c85a;outline-offset:3px}
+.currencyInput input{min-width:0;flex:1;border:0;outline:0;background:transparent;font-size:24px;font-weight:900;color:#173b2d;padding:6px 2px}
+.currencyInput b{flex:none;font-size:15px;color:#52695d}
+.amountInput input{text-align:left}
+.quickAmounts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:8px 0 18px}
+.quickAmounts button{min-height:48px;border:1px solid #c9d9cf;border-radius:13px;background:#edf5f0;color:#214b37;font-weight:900;font-size:16px;cursor:pointer}
+.currencyResult{display:grid;grid-template-columns:1fr auto auto;align-items:end;gap:10px;padding:20px;border-radius:20px;background:linear-gradient(135deg,#0b5d3b,#174f39);color:#fff}
+.currencyResult span{grid-column:1/-1;font-size:13px;font-weight:900;letter-spacing:.06em;color:#dcece4}
+.currencyResult strong{font-size:clamp(34px,9vw,54px);line-height:1;overflow-wrap:anywhere}
+.currencyResult b{font-size:19px;padding-bottom:5px;color:#f2dc98}
 
 @media(max-width:640px){
-  .brand .mark{
-    width:112px;
-    height:84px;
-    flex-basis:112px;
-  }
-
-  .brand{
-    min-width:112px;
-  }
+  .brand .mark{width:112px;height:84px;flex-basis:112px}
+  .brand{min-width:112px}
+  .featureGrid{grid-template-columns:1fr 1fr}
+  .featureGrid .feature{min-height:132px;padding:16px}
+  .featureGrid .feature strong{font-size:17px}
+  .featureGrid .feature span{font-size:13px}
+  .featureGrid .profileFeature{grid-column:1/-1;min-height:104px}
+  .toolCard{padding:17px}
+  .shareRow{grid-template-columns:1fr}
 }
+
+@media(max-width:430px){
+  .featureGrid{grid-template-columns:1fr}
+  .featureGrid .profileFeature{grid-column:auto}
+  .featureGrid .feature{min-height:108px}
+  .quickAmounts{grid-template-columns:1fr 1fr}
+  .currencyResult{grid-template-columns:1fr auto}
+}
+
+[dir='rtl'] .notesCard textarea{text-align:right}
+[dir='rtl'] .amountInput input{text-align:right}
