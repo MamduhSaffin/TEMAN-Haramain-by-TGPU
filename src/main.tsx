@@ -11,6 +11,7 @@ import { initProfileBackup } from './profile-backup';
 import { initSaudiEmergency } from './saudi-emergency';
 import { initTemanReminders } from './teman-reminders';
 import { initFamilyLink } from './family-link';
+import { initFamilySmsFallback } from './family-sms';
 import { isFamilyViewRoute, renderFamilyView } from './family-view';
 import './styles.css';
 import './safe-area.css';
@@ -24,6 +25,7 @@ import './profile-backup.css';
 import './saudi-emergency.css';
 import './teman-reminders.css';
 import './family-link.css';
+import './family-sms.css';
 
 const rootElement = document.getElementById('root')!;
 
@@ -46,6 +48,7 @@ if (isFamilyViewRoute()) {
   initSaudiEmergency();
   initTemanReminders();
   initFamilyLink();
+  initFamilySmsFallback();
 }
 
 if ('serviceWorker' in navigator) {
