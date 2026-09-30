@@ -10,6 +10,8 @@ import { initPhraseExpansion } from './phrase-expansion';
 import { initProfileBackup } from './profile-backup';
 import { initSaudiEmergency } from './saudi-emergency';
 import { initTemanReminders } from './teman-reminders';
+import { initFamilyLink } from './family-link';
+import { isFamilyViewRoute, renderFamilyView } from './family-view';
 import './styles.css';
 import './safe-area.css';
 import './brand-logo.css';
@@ -21,22 +23,30 @@ import './phrase-expansion.css';
 import './profile-backup.css';
 import './saudi-emergency.css';
 import './teman-reminders.css';
+import './family-link.css';
 
-createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-);
+const rootElement = document.getElementById('root')!;
 
-initTemanUiRefresh();
-initUxEnhancements();
-initTravelReadiness();
-initLocationTools();
-initAccessibilityTools();
-initPhraseExpansion();
-initProfileBackup();
-initSaudiEmergency();
-initTemanReminders();
+if (isFamilyViewRoute()) {
+  renderFamilyView(rootElement);
+} else {
+  createRoot(rootElement).render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>,
+  );
+
+  initTemanUiRefresh();
+  initUxEnhancements();
+  initTravelReadiness();
+  initLocationTools();
+  initAccessibilityTools();
+  initPhraseExpansion();
+  initProfileBackup();
+  initSaudiEmergency();
+  initTemanReminders();
+  initFamilyLink();
+}
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
