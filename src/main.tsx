@@ -31,6 +31,7 @@ import './offline-card.css';
 import './offline-map.css';
 
 const rootElement = document.getElementById('root')!;
+const MAP_PACK_CACHE = 'teman-map-packs-v1';
 
 function offlineMapLabel(loading = false) {
   const lang = document.documentElement.lang.toLowerCase();
@@ -80,6 +81,27 @@ function initLazyOfflineMap() {
   refreshLabel();
 }
 
+async function hasSavedOfflineMapPack() {
+  if (!('caches' in window)) return false;
+  try {
+    const cache = await caches.open(MAP_PACK_CACHE);
+    return Boolean(
+      (await cache.match('/maps/makkah.pmtiles')) ||
+      (await cache.match('/maps/madinah.pmtiles')),
+    );
+  } catch {
+    return false;
+  }
+}
+
+function warmOfflineMapEngineForSavedPacks() {
+  if (!navigator.onLine) return;
+  window.setTimeout(async () => {
+    if (!navigator.onLine || !(await hasSavedOfflineMapPack())) return;
+    void import('./offline-map').catch(() => {});
+  }, 5000);
+}
+
 if (isFamilyViewRoute()) {
   renderFamilyView(rootElement);
 } else {
@@ -102,6 +124,7 @@ if (isFamilyViewRoute()) {
   initFamilySmsFallback();
   initOfflineEmergencyCard();
   initLazyOfflineMap();
+  warmOfflineMapEngineForSavedPacks();
 }
 
 if ('serviceWorker' in navigator) {
