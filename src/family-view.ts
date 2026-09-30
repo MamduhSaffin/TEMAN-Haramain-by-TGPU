@@ -16,6 +16,9 @@ const COPY = {
   ar: { title:'TEMAN عرض الأسرة', eyebrow:'للأسرة', heading:'حالة الحاج / المعتمر.', intro:'تعرض هذه الصفحة فقط حالات الاطمئنان التي اختار الحاج أو المعتمر إرسالها. لا يوجد تتبع مباشر.', loading:'جارٍ تحميل حالة الأسرة…', missing:'رابط الأسرة غير مكتمل. اطلب رابطًا جديدًا من الحاج أو المعتمر.', offline:'هذا الجهاز غير متصل. لا يمكن تحديث الحالة حتى عودة الإنترنت.', inactive:'رابط الأسرة هذا لم يعد فعالاً. اطلب رابطًا جديدًا.', config:'خدمة الأسرة السحابية لم تُضبط على Azure بعد.', failed:'تعذر تحميل حالة رابط الأسرة.', updated:'تم تحديث الحالة من TEMAN.', none:'لا توجد حالة مرسلة بعد.', staleTitle:'آخر حالة أقدم من ساعتين', staleText:'هذه آخر حالة مرسلة وليست الموقع الحالي. تواصل مع الحاج أو المعتمر أو المطوف عند الحاجة.', pilgrim:'الحاج / المعتمر', status:'الحالة', time:'الوقت', hotel:'الفندق', groupBus:'المجموعة / الحافلة', refresh:'تحديث الحالة', refreshing:'جارٍ التحديث…', privacy:'الخصوصية', privacyText:'يعرض TEMAN فقط الحالات التي يرسلها الحاج أو المعتمر. لا يتم عرض موقع GPS بشكل مستمر.', online:'متصل', offlineShort:'غير متصل' },
 } as const;
 
+const ACTIVE_REFRESH_MS = 5_000;
+const BACKGROUND_REFRESH_MS = 30_000;
+
 function localeFromParams(params: URLSearchParams): Locale {
   const explicit = params.get('lang');
   if (explicit === 'ar' || explicit === 'en' || explicit === 'ms') return explicit;
@@ -44,7 +47,9 @@ export function renderFamilyView(root: HTMLElement) {
   let latest: FamilyStatus | null = null;
   let message: string = t.loading;
   let refreshing = false;
+  let requestInFlight = false;
   let inactive = false;
+  let pollTimer: number | null = null;
 
   function paint() {
     const stale = Boolean(latest?.createdAt && Date.now() - latest.createdAt > 2 * 60 * 60 * 1000);
@@ -66,13 +71,20 @@ export function renderFamilyView(root: HTMLElement) {
         <section class="familyViewPrivacy"><strong>🔒 ${t.privacy}</strong><p>${t.privacyText}</p></section>
       </section>
     </main>`;
-    root.querySelector<HTMLButtonElement>('.familyViewRefresh')?.addEventListener('click', () => void refresh());
+    root.querySelector<HTMLButtonElement>('.familyViewRefresh')?.addEventListener('click', () => void refresh(false));
   }
 
-  async function refresh() {
+  async function refresh(silent = false) {
     if (!familyId || !token) { inactive = true; message = t.missing; paint(); return; }
     if (!navigator.onLine) { message = t.offline; paint(); return; }
-    refreshing = true; paint();
+    if (requestInFlight) return;
+
+    requestInFlight = true;
+    if (!silent) {
+      refreshing = true;
+      paint();
+    }
+
     try {
       const response = await fetch(`/api/family/status?family=${encodeURIComponent(familyId)}&token=${encodeURIComponent(token)}`, { cache:'no-store' });
       const body = await response.json().catch(() => ({})) as { latest?: FamilyStatus | null; configurationRequired?: boolean; message?: string };
@@ -80,14 +92,48 @@ export function renderFamilyView(root: HTMLElement) {
         if (response.status === 403 || response.status === 404) { inactive = true; message = t.inactive; }
         else message = body.configurationRequired ? t.config : (body.message || t.failed);
       } else {
-        inactive = false; latest = body.latest ?? null; message = body.latest ? t.updated : t.none;
+        inactive = false;
+        latest = body.latest ?? null;
+        message = body.latest ? t.updated : t.none;
       }
-    } catch { message = t.failed; }
-    finally { refreshing = false; paint(); }
+    } catch {
+      message = t.failed;
+    } finally {
+      requestInFlight = false;
+      refreshing = false;
+      paint();
+    }
   }
 
-  window.addEventListener('online', () => { paint(); void refresh(); });
-  window.addEventListener('offline', () => { message = t.offline; paint(); });
-  paint(); void refresh();
-  window.setInterval(() => { if (navigator.onLine && !inactive) void refresh(); }, 30_000);
+  function schedulePoll() {
+    if (pollTimer !== null) window.clearTimeout(pollTimer);
+    const delay = document.visibilityState === 'visible' ? ACTIVE_REFRESH_MS : BACKGROUND_REFRESH_MS;
+    pollTimer = window.setTimeout(async () => {
+      if (navigator.onLine && !inactive) await refresh(true);
+      schedulePoll();
+    }, delay);
+  }
+
+  window.addEventListener('online', () => {
+    paint();
+    void refresh(true);
+    schedulePoll();
+  });
+  window.addEventListener('offline', () => {
+    message = t.offline;
+    paint();
+    schedulePoll();
+  });
+  window.addEventListener('focus', () => {
+    if (navigator.onLine && !inactive) void refresh(true);
+    schedulePoll();
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && navigator.onLine && !inactive) void refresh(true);
+    schedulePoll();
+  });
+
+  paint();
+  void refresh(false);
+  schedulePoll();
 }
