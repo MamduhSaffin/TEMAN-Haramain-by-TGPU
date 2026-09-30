@@ -24,7 +24,7 @@ function localeFromParams(params: URLSearchParams): Locale {
   if (lang.startsWith('ms')) return 'ms';
   return 'en';
 }
-function escapeHtml(value: string) { return value.replace(/[&<>'"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[c] || c)); }
+function escapeHtml(value: string) { return value.replace(/[&<>'\"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '\"':'&quot;' }[c] || c)); }
 function formatTime(value: number, lang: Locale) { return new Date(value).toLocaleString(lang === 'ar' ? 'ar-SA' : lang === 'en' ? 'en-GB' : 'ms-MY', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }); }
 
 export function isFamilyViewRoute() {
@@ -70,6 +70,7 @@ export function renderFamilyView(root: HTMLElement) {
   }
 
   async function refresh() {
+    if (refreshing) return;
     if (!familyId || !token) { inactive = true; message = t.missing; paint(); return; }
     if (!navigator.onLine) { message = t.offline; paint(); return; }
     refreshing = true; paint();
@@ -86,8 +87,14 @@ export function renderFamilyView(root: HTMLElement) {
     finally { refreshing = false; paint(); }
   }
 
-  window.addEventListener('online', () => { paint(); void refresh(); });
+  const refreshWhenActive = () => {
+    if (document.visibilityState === 'visible' && navigator.onLine && !inactive && !refreshing) void refresh();
+  };
+
+  window.addEventListener('online', () => { paint(); refreshWhenActive(); });
   window.addEventListener('offline', () => { message = t.offline; paint(); });
+  window.addEventListener('focus', refreshWhenActive);
+  document.addEventListener('visibilitychange', refreshWhenActive);
   paint(); void refresh();
-  window.setInterval(() => { if (navigator.onLine && !inactive) void refresh(); }, 30_000);
+  window.setInterval(refreshWhenActive, 5_000);
 }
