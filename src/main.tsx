@@ -1,7 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
-import { initTemanUiRefresh } from './ui-refresh';
+import { initTemanUiRefresh, onTemanUiRefresh } from './ui-refresh';
 import { initUxEnhancements } from './ux-enhancements';
 import { initTravelReadiness } from './travel-readiness';
 import { initLocationTools } from './location-tools';
@@ -13,7 +13,6 @@ import { initTemanReminders } from './teman-reminders';
 import { initFamilyLink } from './family-link';
 import { initFamilySmsFallback } from './family-sms';
 import { initOfflineEmergencyCard } from './offline-card';
-import { initOfflineMap } from './offline-map';
 import { isFamilyViewRoute, renderFamilyView } from './family-view';
 import './styles.css';
 import './safe-area.css';
@@ -32,6 +31,54 @@ import './offline-card.css';
 import './offline-map.css';
 
 const rootElement = document.getElementById('root')!;
+
+function offlineMapLabel(loading = false) {
+  const lang = document.documentElement.lang.toLowerCase();
+  if (lang.startsWith('ar')) return loading ? '🗺️ جارٍ تحميل الخريطة…' : '🗺️ خريطة دون إنترنت';
+  if (lang.startsWith('en')) return loading ? '🗺️ LOADING MAP…' : '🗺️ OFFLINE MAP';
+  return loading ? '🗺️ MEMUAT PETA…' : '🗺️ PETA OFFLINE';
+}
+
+function initLazyOfflineMap() {
+  if (document.querySelector('.temanOfflineMapTrigger')) return;
+
+  const trigger = document.createElement('button');
+  trigger.type = 'button';
+  trigger.className = 'temanOfflineMapTrigger';
+  document.body.appendChild(trigger);
+
+  let loading = false;
+  let loaded = false;
+
+  const refreshLabel = () => {
+    if (!loaded) trigger.textContent = offlineMapLabel(loading);
+  };
+
+  trigger.addEventListener('click', async () => {
+    if (loading || loaded) return;
+    loading = true;
+    trigger.disabled = true;
+    refreshLabel();
+
+    try {
+      trigger.remove();
+      const { initOfflineMap } = await import('./offline-map');
+      initOfflineMap();
+      const realTrigger = document.querySelector<HTMLButtonElement>('.temanOfflineMapTrigger');
+      if (!realTrigger) throw new Error('Offline map trigger was not created');
+      loaded = true;
+      realTrigger.click();
+    } catch {
+      loading = false;
+      trigger.disabled = false;
+      refreshLabel();
+      if (!trigger.isConnected) document.body.appendChild(trigger);
+    }
+  });
+
+  onTemanUiRefresh(refreshLabel);
+  refreshLabel();
+}
 
 if (isFamilyViewRoute()) {
   renderFamilyView(rootElement);
@@ -54,7 +101,7 @@ if (isFamilyViewRoute()) {
   initFamilyLink();
   initFamilySmsFallback();
   initOfflineEmergencyCard();
-  initOfflineMap();
+  initLazyOfflineMap();
 }
 
 if ('serviceWorker' in navigator) {
