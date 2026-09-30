@@ -1,0 +1,45 @@
+.extraPhraseSection{
+  margin-top:20px;
+  padding:20px;
+  border:1px solid #d9e5dc;
+  border-radius:24px;
+  background:#fff;
+  box-shadow:0 10px 26px rgba(31,75,55,.07);
+}
+.extraPhraseHead strong,.extraPhraseHead span{display:block}
+.extraPhraseHead strong{font-size:18px;color:#0b5d3b;letter-spacing:.02em}
+.extraPhraseHead span{margin-top:5px;color:#607467;font-size:14px;line-height:1.4}
+.extraPhraseGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}
+.extraPhraseGrid button{
+  min-width:0;
+  min-height:116px;
+  border:1px solid #cfddd3;
+  border-radius:18px;
+  background:#f8fbf9;
+  color:#173b2d;
+  padding:15px;
+  text-align:left;
+  display:grid;
+  grid-template-columns:1fr auto;
+  grid-template-rows:auto 1fr;
+  gap:7px 10px;
+  align-items:center;
+  cursor:pointer;
+}
+.extraPhraseGrid button:hover{border-color:#9fc6ac;background:#f0f8f3}
+.extraPhraseGrid .phraseMeaning{grid-column:1/-1;font-size:15px;font-weight:800;line-height:1.35;color:#405c4d}
+.extraPhraseGrid .phraseArabic{font-size:23px;line-height:1.7;color:#0b5d3b;text-align:right;font-family:"Noto Sans Arabic","Segoe UI",Tahoma,Arial,sans-serif}
+.extraPhraseGrid b{width:38px;height:38px;border-radius:13px;background:#0b5d3b;color:#fff;display:grid;place-items:center;font-size:14px}
+
+.seniorTextMode .extraPhraseHead strong{font-size:20px}
+.seniorTextMode .extraPhraseHead span{font-size:16px}
+.seniorTextMode .extraPhraseGrid .phraseMeaning{font-size:17px}
+.seniorTextMode .extraPhraseGrid .phraseArabic{font-size:27px}
+
+@media(max-width:560px){
+  .extraPhraseSection{padding:16px}
+  .extraPhraseGrid{grid-template-columns:1fr}
+  .extraPhraseGrid button{min-height:104px}
+}
+
+[dir='rtl'] .extraPhraseGrid button{text-align:right}
