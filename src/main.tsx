@@ -13,6 +13,7 @@ import { initTemanReminders } from './teman-reminders';
 import { initFamilyLink } from './family-link';
 import { initFamilySmsFallback } from './family-sms';
 import { initOfflineEmergencyCard } from './offline-card';
+import { initSafetyCompass } from './safety-navigation';
 import { isFamilyViewRoute, renderFamilyView } from './family-view';
 import './styles.css';
 import './safe-area.css';
@@ -29,6 +30,7 @@ import './family-link.css';
 import './family-sms.css';
 import './offline-card.css';
 import './offline-map.css';
+import './safety-navigation.css';
 
 const rootElement = document.getElementById('root')!;
 const MAP_PACK_CACHE = 'teman-map-packs-v1';
@@ -124,6 +126,7 @@ if (isFamilyViewRoute()) {
   initFamilySmsFallback();
   initOfflineEmergencyCard();
   initLazyOfflineMap();
+  initSafetyCompass();
   warmOfflineMapEngineForSavedPacks();
 }
 
