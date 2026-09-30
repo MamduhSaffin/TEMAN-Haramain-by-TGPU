@@ -5,6 +5,7 @@ import { initUxEnhancements } from './ux-enhancements';
 import { initTravelReadiness } from './travel-readiness';
 import { initLocationTools } from './location-tools';
 import { initAccessibilityTools } from './accessibility-tools';
+import { initPhraseExpansion } from './phrase-expansion';
 import './styles.css';
 import './safe-area.css';
 import './brand-logo.css';
@@ -12,6 +13,7 @@ import './ux-enhancements.css';
 import './travel-readiness.css';
 import './location-tools.css';
 import './accessibility-tools.css';
+import './phrase-expansion.css';
 
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -23,6 +25,7 @@ initUxEnhancements();
 initTravelReadiness();
 initLocationTools();
 initAccessibilityTools();
+initPhraseExpansion();
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
