@@ -4,12 +4,14 @@ import App from './App';
 import { initUxEnhancements } from './ux-enhancements';
 import { initTravelReadiness } from './travel-readiness';
 import { initLocationTools } from './location-tools';
+import { initAccessibilityTools } from './accessibility-tools';
 import './styles.css';
 import './safe-area.css';
 import './brand-logo.css';
 import './ux-enhancements.css';
 import './travel-readiness.css';
 import './location-tools.css';
+import './accessibility-tools.css';
 
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -20,6 +22,7 @@ createRoot(document.getElementById('root')!).render(
 initUxEnhancements();
 initTravelReadiness();
 initLocationTools();
+initAccessibilityTools();
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
