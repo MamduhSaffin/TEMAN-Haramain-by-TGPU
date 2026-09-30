@@ -1,0 +1,47 @@
+.saudiEmergencyCard{
+  margin:16px 0 4px;
+  padding:20px;
+  border:2px solid #efcaca;
+  border-radius:24px;
+  background:linear-gradient(145deg,#fffafa,#fff4f4);
+  box-shadow:0 10px 26px rgba(124,36,36,.08);
+}
+.saudiEmergencyHead{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.saudiEmergencyHead>div{min-width:0}
+.saudiEmergencyHead strong,.saudiEmergencyHead span{display:block}
+.saudiEmergencyHead strong{font-size:18px;color:#8f2525;letter-spacing:.02em}
+.saudiEmergencyHead span{margin-top:5px;color:#6f5959;font-size:14px;line-height:1.45}
+.saudiEmergencyHead>b{flex:none;width:44px;height:44px;border-radius:15px;background:#9e2424;color:#fff;display:grid;place-items:center;font-size:23px;box-shadow:0 6px 16px rgba(158,36,36,.16)}
+.saudiEmergencyGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}
+.saudiEmergencyGrid button{
+  min-width:0;
+  min-height:82px;
+  border:2px solid #e2bbbb;
+  border-radius:17px;
+  background:#fff;
+  color:#742020;
+  padding:13px 14px;
+  text-align:left;
+  cursor:pointer;
+}
+.saudiEmergencyGrid button:first-child,.saudiEmergencyGrid [data-service='ambulance']{background:#9e2424;color:#fff;border-color:#9e2424}
+.saudiEmergencyGrid button[hidden]{display:none}
+.saudiEmergencyGrid strong,.saudiEmergencyGrid span{display:block;overflow-wrap:anywhere}
+.saudiEmergencyGrid strong{font-size:18px;line-height:1.2}
+.saudiEmergencyGrid span{margin-top:5px;font-size:13px;line-height:1.35;color:#7c6363}
+.saudiEmergencyGrid button:first-child span,.saudiEmergencyGrid [data-service='ambulance'] span{color:#fff0f0}
+.saudiEmergencyCard>small{display:block;margin-top:11px;color:#7b6868;font-size:12px;line-height:1.4}
+
+.seniorTextMode .saudiEmergencyHead strong{font-size:20px}
+.seniorTextMode .saudiEmergencyHead span{font-size:16px}
+.seniorTextMode .saudiEmergencyGrid strong{font-size:20px}
+.seniorTextMode .saudiEmergencyGrid span{font-size:15px}
+.seniorTextMode .saudiEmergencyCard>small{font-size:14px}
+
+@media(max-width:520px){
+  .saudiEmergencyCard{padding:16px}
+  .saudiEmergencyGrid{grid-template-columns:1fr}
+  .saudiEmergencyGrid button{min-height:74px}
+}
+
+[dir='rtl'] .saudiEmergencyHead>div,[dir='rtl'] .saudiEmergencyGrid button{text-align:right}
