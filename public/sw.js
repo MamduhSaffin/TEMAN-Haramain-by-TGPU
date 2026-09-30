@@ -1,5 +1,5 @@
-const CACHE = 'teman-shell-v2';
-const CORE = ['/', '/manifest.webmanifest', '/teman-icon.svg'];
+const CACHE = 'teman-shell-v3';
+const CORE = ['/', '/manifest.webmanifest', '/teman-icon.svg?v=3'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(CORE)));
