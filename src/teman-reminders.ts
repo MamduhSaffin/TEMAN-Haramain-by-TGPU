@@ -17,7 +17,12 @@ type TemanReminder = {
   lastTriggeredAt?: number;
 };
 
+type NotificationState = NotificationPermission | 'unsupported';
+
 const STORAGE_KEY = 'teman.reminders.v1';
+const DAILY_GRACE_MS = 5 * 60 * 1000;
+const MAX_TIMER_WAIT_MS = 15_000;
+
 const ICONS: Record<ReminderKind, string> = {
   medication: '💊',
   hydration: '💧',
@@ -34,8 +39,9 @@ const COPY = {
     medicationHint: 'Setiap hari • 8:00 pagi', hydrationHint: 'Setiap 2 jam', meetingHint: 'Sekali • 1 jam dari sekarang', busHint: 'Sekali • 2 jam dari sekarang', familyHint: 'Setiap hari • 8:00 malam',
     daily: 'Masa setiap hari', interval: 'Ulang setiap', once: 'Tarikh & masa', next: 'Seterusnya', off: 'Dimatikan', delete: 'Padam', on: 'ON', offToggle: 'OFF',
     hour1: '1 jam', hour15: '1 jam 30 minit', hour2: '2 jam', hour3: '3 jam',
-    notifications: 'Notifikasi peranti', allow: 'Benarkan notifikasi', granted: 'Dibenarkan', denied: 'Disekat', default: 'Belum diminta', unsupported: 'Tidak disokong',
-    notificationNote: 'Semasa aplikasi dibuka, TEMAN menyemak jadual secara offline. Peringatan ketika aplikasi ditutup bergantung pada sokongan browser/peranti.',
+    notifications: 'Notifikasi peranti', allow: 'Benarkan notifikasi', granted: 'Dibenarkan', denied: 'Disekat', default: 'Belum diminta', unsupported: 'Tidak tersedia dalam browser ini',
+    unsupportedHint: 'Buka preview ini terus dalam Chrome/Edge atau pasang TEMAN sebagai PWA. Browser dalam aplikasi seperti WhatsApp/ChatGPT mungkin tidak menyokong notifikasi.',
+    notificationNote: 'Semasa TEMAN dibuka, masa peringatan disemak dengan lebih tepat. Notifikasi ketika aplikasi ditutup masih bergantung pada sokongan browser/PWA.',
     added: 'Peringatan ditambah dan disimpan pada telefon.', removed: 'Peringatan dipadam dari telefon.', due: 'PERINGATAN', permissionGranted: 'Notifikasi peranti dibenarkan.', permissionDenied: 'Notifikasi tidak dibenarkan. Jadual masih disimpan offline.',
   },
   en: {
@@ -45,8 +51,9 @@ const COPY = {
     medicationHint: 'Daily • 8:00 AM', hydrationHint: 'Every 2 hours', meetingHint: 'Once • 1 hour from now', busHint: 'Once • 2 hours from now', familyHint: 'Daily • 8:00 PM',
     daily: 'Time every day', interval: 'Repeat every', once: 'Date & time', next: 'Next', off: 'Off', delete: 'Delete', on: 'ON', offToggle: 'OFF',
     hour1: '1 hour', hour15: '1 hour 30 minutes', hour2: '2 hours', hour3: '3 hours',
-    notifications: 'Device notifications', allow: 'Allow notifications', granted: 'Allowed', denied: 'Blocked', default: 'Not requested', unsupported: 'Unsupported',
-    notificationNote: 'While TEMAN is open, schedules are checked offline. Alerts while the app is closed depend on browser/device support.',
+    notifications: 'Device notifications', allow: 'Allow notifications', granted: 'Allowed', denied: 'Blocked', default: 'Not requested', unsupported: 'Unavailable in this browser',
+    unsupportedHint: 'Open this preview directly in Chrome/Edge or install TEMAN as a PWA. In-app browsers such as WhatsApp/ChatGPT may not expose notifications.',
+    notificationNote: 'While TEMAN is open, reminder times are checked more precisely. Alerts while the app is closed still depend on browser/PWA support.',
     added: 'Reminder added and saved on this phone.', removed: 'Reminder deleted from this phone.', due: 'REMINDER', permissionGranted: 'Device notifications are enabled.', permissionDenied: 'Notifications are not enabled. The schedule is still saved offline.',
   },
   ar: {
@@ -56,8 +63,9 @@ const COPY = {
     medicationHint: 'يوميًا • 8:00 صباحًا', hydrationHint: 'كل ساعتين', meetingHint: 'مرة واحدة • بعد ساعة', busHint: 'مرة واحدة • بعد ساعتين', familyHint: 'يوميًا • 8:00 مساءً',
     daily: 'الوقت يوميًا', interval: 'التكرار كل', once: 'التاريخ والوقت', next: 'التالي', off: 'متوقف', delete: 'حذف', on: 'تشغيل', offToggle: 'إيقاف',
     hour1: 'ساعة', hour15: 'ساعة ونصف', hour2: 'ساعتان', hour3: '3 ساعات',
-    notifications: 'إشعارات الجهاز', allow: 'السماح بالإشعارات', granted: 'مسموح', denied: 'محظور', default: 'لم يُطلب بعد', unsupported: 'غير مدعوم',
-    notificationNote: 'عندما يكون TEMAN مفتوحًا يفحص المواعيد دون إنترنت. الإشعارات عند إغلاق التطبيق تعتمد على دعم المتصفح والجهاز.',
+    notifications: 'إشعارات الجهاز', allow: 'السماح بالإشعارات', granted: 'مسموح', denied: 'محظور', default: 'لم يُطلب بعد', unsupported: 'غير متاح في هذا المتصفح',
+    unsupportedHint: 'افتح المعاينة مباشرة في Chrome أو Edge أو ثبّت TEMAN كتطبيق PWA. قد لا تدعم المتصفحات داخل التطبيقات مثل WhatsApp أو ChatGPT الإشعارات.',
+    notificationNote: 'عندما يكون TEMAN مفتوحًا يتم فحص وقت التذكير بدقة أكبر. الإشعارات عند إغلاق التطبيق تعتمد على دعم المتصفح أو PWA.',
     added: 'تمت إضافة التذكير وحفظه على الهاتف.', removed: 'تم حذف التذكير من الهاتف.', due: 'تذكير', permissionGranted: 'تم السماح بإشعارات الجهاز.', permissionDenied: 'لم يتم السماح بالإشعارات، لكن الجدول ما زال محفوظًا دون إنترنت.',
   },
 } as const;
@@ -114,14 +122,18 @@ function todayAt(time: string, now: number) {
 
 function currentDueSlot(reminder: TemanReminder, now = Date.now()): number | undefined {
   if (!reminder.enabled) return undefined;
+
   if (reminder.schedule.kind === 'once') {
     const scheduled = reminder.schedule.at;
     return now >= scheduled && (reminder.lastTriggeredAt ?? 0) < scheduled ? scheduled : undefined;
   }
+
   if (reminder.schedule.kind === 'daily') {
     const scheduled = todayAt(reminder.schedule.time, now);
-    return now >= scheduled && (reminder.lastTriggeredAt ?? 0) < scheduled ? scheduled : undefined;
+    if (now < scheduled || now - scheduled > DAILY_GRACE_MS) return undefined;
+    return (reminder.lastTriggeredAt ?? 0) < scheduled ? scheduled : undefined;
   }
+
   if (now < reminder.schedule.startAt) return undefined;
   const interval = Math.max(15, reminder.schedule.everyMinutes) * 60 * 1000;
   const slot = reminder.schedule.startAt + Math.floor((now - reminder.schedule.startAt) / interval) * interval;
@@ -130,7 +142,11 @@ function currentDueSlot(reminder: TemanReminder, now = Date.now()): number | und
 
 function nextOccurrence(reminder: TemanReminder, now = Date.now()): number | undefined {
   if (!reminder.enabled) return undefined;
-  if (reminder.schedule.kind === 'once') return reminder.schedule.at;
+
+  if (reminder.schedule.kind === 'once') {
+    return reminder.lastTriggeredAt ? undefined : reminder.schedule.at;
+  }
+
   if (reminder.schedule.kind === 'daily') {
     const today = todayAt(reminder.schedule.time, now);
     if (today > now) return today;
@@ -138,6 +154,7 @@ function nextOccurrence(reminder: TemanReminder, now = Date.now()): number | und
     tomorrow.setDate(tomorrow.getDate() + 1);
     return tomorrow.getTime();
   }
+
   const interval = Math.max(15, reminder.schedule.everyMinutes) * 60 * 1000;
   if (now < reminder.schedule.startAt) return reminder.schedule.startAt;
   return reminder.schedule.startAt + (Math.floor((now - reminder.schedule.startAt) / interval) + 1) * interval;
@@ -155,9 +172,35 @@ function formatDateTime(value?: number) {
   return new Date(value).toLocaleString(tag, { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
 }
 
-function notificationStatus() {
-  if (!('Notification' in window)) return 'unsupported' as const;
+function notificationStatus(): NotificationState {
+  if (!('Notification' in window)) return 'unsupported';
   return Notification.permission;
+}
+
+async function showSystemNotification(reminder: TemanReminder) {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  const options: NotificationOptions = {
+    body: reminder.title,
+    icon: '/teman-icon.svg',
+    badge: '/teman-icon.svg',
+    tag: `teman-reminder-${reminder.id}`,
+  };
+
+  if ('serviceWorker' in navigator) {
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      await registration.showNotification('TEMAN Haramain', options);
+      return;
+    } catch {
+      // Fall through to the page notification API when available.
+    }
+  }
+
+  try {
+    new Notification('TEMAN Haramain', options);
+  } catch {
+    // The in-app reminder remains visible if the browser blocks system notifications.
+  }
 }
 
 export function initTemanReminders() {
@@ -180,11 +223,14 @@ export function initTemanReminders() {
   let message = '';
   let alertMessage = '';
   let alertTimer: number | null = null;
+  let checkTimer: number | null = null;
+  let lastOverlayLocale = locale();
 
   const persist = () => {
     saveReminders(reminders);
     renderTrigger();
     if (!overlay.hidden) renderOverlay();
+    scheduleNextCheck();
   };
 
   const showMessage = (value: string) => {
@@ -200,15 +246,9 @@ export function initTemanReminders() {
       alertMessage = '';
       alertTimer = null;
       renderTrigger();
-    }, 12000);
+    }, 12_000);
     renderTrigger();
-    if ('Notification' in window && Notification.permission === 'granted') {
-      try {
-        new Notification('TEMAN Haramain', { body: reminder.title, icon: '/teman-icon.svg', tag: `teman-reminder-${reminder.id}` });
-      } catch {
-        // The in-app reminder remains available if system notifications fail.
-      }
-    }
+    void showSystemNotification(reminder);
   };
 
   const runDueCheck = () => {
@@ -220,8 +260,24 @@ export function initTemanReminders() {
       showDue(reminder);
       return { ...reminder, lastTriggeredAt: now };
     });
-    if (changed) persist();
+    if (changed) saveReminders(reminders);
+    renderTrigger();
+    if (!overlay.hidden && changed) renderOverlay();
   };
+
+  function scheduleNextCheck() {
+    if (checkTimer !== null) window.clearTimeout(checkTimer);
+    const now = Date.now();
+    const future = reminders
+      .map(item => nextOccurrence(item, now))
+      .filter((value): value is number => typeof value === 'number' && value > now)
+      .sort((a, b) => a - b)[0];
+    const wait = future ? Math.min(Math.max(future - now + 150, 750), MAX_TIMER_WAIT_MS) : MAX_TIMER_WAIT_MS;
+    checkTimer = window.setTimeout(() => {
+      runDueCheck();
+      scheduleNextCheck();
+    }, wait);
+  }
 
   function renderTrigger() {
     const onHome = Boolean(document.querySelector('.hero'));
@@ -241,6 +297,7 @@ export function initTemanReminders() {
 
   function renderOverlay() {
     const t = COPY[locale()];
+    lastOverlayLocale = locale();
     const status = notificationStatus();
     const statusText = status === 'granted' ? t.granted : status === 'denied' ? t.denied : status === 'unsupported' ? t.unsupported : t.default;
     const sorted = [...reminders].sort((a, b) => (nextOccurrence(a) ?? Number.MAX_SAFE_INTEGER) - (nextOccurrence(b) ?? Number.MAX_SAFE_INTEGER));
@@ -257,6 +314,7 @@ export function initTemanReminders() {
             <div><strong>${t.notifications}</strong><span>${statusText}</span></div>
             ${status !== 'granted' && status !== 'unsupported' ? `<button type="button" data-notifications>${t.allow}</button>` : ''}
           </section>
+          ${status === 'unsupported' ? `<p class="reminderFootnote">${t.unsupportedHint}</p>` : ''}
           <h3>${t.add}</h3>
           <div class="reminderQuickGrid">
             ${(['medication', 'hydration', 'meeting', 'bus', 'family'] as ReminderKind[]).map(kind => `<button type="button" data-add="${kind}"><b>${ICONS[kind]} ${t[kind]}</b><span>${t[`${kind}Hint` as keyof typeof t]}</span></button>`).join('')}
@@ -268,8 +326,12 @@ export function initTemanReminders() {
       </div>`;
 
     overlay.querySelector<HTMLButtonElement>('[data-close]')?.addEventListener('click', closeOverlay);
+
     overlay.querySelector<HTMLButtonElement>('[data-notifications]')?.addEventListener('click', async () => {
-      if (!('Notification' in window)) return;
+      if (!('Notification' in window)) {
+        showMessage(COPY[locale()].unsupportedHint);
+        return;
+      }
       try {
         const result = await Notification.requestPermission();
         showMessage(result === 'granted' ? COPY[locale()].permissionGranted : COPY[locale()].permissionDenied);
@@ -277,35 +339,43 @@ export function initTemanReminders() {
         showMessage(COPY[locale()].permissionDenied);
       }
     });
+
     overlay.querySelectorAll<HTMLButtonElement>('[data-add]').forEach(button => button.addEventListener('click', () => {
       const kind = button.dataset.add as ReminderKind;
       reminders = [...reminders, createReminder(kind)];
       message = COPY[locale()].added;
       persist();
     }));
+
     overlay.querySelectorAll<HTMLButtonElement>('[data-delete]').forEach(button => button.addEventListener('click', () => {
       reminders = reminders.filter(item => item.id !== button.dataset.delete);
       message = COPY[locale()].removed;
       persist();
     }));
+
     overlay.querySelectorAll<HTMLInputElement>('[data-enabled]').forEach(input => input.addEventListener('change', () => {
       reminders = reminders.map(item => item.id === input.dataset.enabled ? { ...item, enabled: input.checked } : item);
       persist();
     }));
+
     overlay.querySelectorAll<HTMLInputElement>('[data-title]').forEach(input => input.addEventListener('change', () => {
       const value = input.value.trim().slice(0, 80);
       reminders = reminders.map(item => item.id === input.dataset.title ? { ...item, title: value || defaultTitle(item.kind) } : item);
       persist();
     }));
+
     overlay.querySelectorAll<HTMLInputElement>('[data-daily]').forEach(input => input.addEventListener('change', () => {
+      if (!input.value) return;
       reminders = reminders.map(item => item.id === input.dataset.daily ? { ...item, schedule: { kind: 'daily', time: input.value }, lastTriggeredAt: undefined } : item);
       persist();
     }));
+
     overlay.querySelectorAll<HTMLSelectElement>('[data-interval]').forEach(select => select.addEventListener('change', () => {
       const minutes = Number(select.value);
       reminders = reminders.map(item => item.id === select.dataset.interval ? { ...item, schedule: { kind: 'interval', everyMinutes: minutes, startAt: Date.now() + minutes * 60 * 1000 }, lastTriggeredAt: undefined } : item);
       persist();
     }));
+
     overlay.querySelectorAll<HTMLInputElement>('[data-once]').forEach(input => input.addEventListener('change', () => {
       const at = new Date(input.value).getTime();
       if (!Number.isFinite(at)) return;
@@ -320,6 +390,7 @@ export function initTemanReminders() {
       : reminder.schedule.kind === 'interval'
         ? `<label><span>${t.interval}</span><select data-interval="${reminder.id}"><option value="60" ${reminder.schedule.everyMinutes === 60 ? 'selected' : ''}>${t.hour1}</option><option value="90" ${reminder.schedule.everyMinutes === 90 ? 'selected' : ''}>${t.hour15}</option><option value="120" ${reminder.schedule.everyMinutes === 120 ? 'selected' : ''}>${t.hour2}</option><option value="180" ${reminder.schedule.everyMinutes === 180 ? 'selected' : ''}>${t.hour3}</option></select></label>`
         : `<label><span>${t.once}</span><input type="datetime-local" data-once="${reminder.id}" value="${toLocalInput(reminder.schedule.at)}"></label>`;
+
     return `<article class="temanReminderCard">
       <div class="reminderCardHead"><span class="reminderKindIcon">${ICONS[reminder.kind]}</span><input aria-label="${escapeHtml(t[reminder.kind])}" data-title="${reminder.id}" value="${escapeHtml(reminder.title)}"><label class="reminderToggle"><input type="checkbox" data-enabled="${reminder.id}" ${reminder.enabled ? 'checked' : ''}><span>${reminder.enabled ? t.on : t.offToggle}</span></label></div>
       <div class="reminderSchedule">${schedule}</div>
@@ -345,19 +416,34 @@ export function initTemanReminders() {
     reminders = loadReminders();
     renderTrigger();
     if (!overlay.hidden) renderOverlay();
+    scheduleNextCheck();
   });
 
   onTemanUiRefresh(() => {
     renderTrigger();
-    if (!overlay.hidden) renderOverlay();
+    const currentLocale = locale();
+    if (!overlay.hidden && currentLocale !== lastOverlayLocale) renderOverlay();
   });
 
-  const timer = window.setInterval(runDueCheck, 30_000);
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') runDueCheck();
+    if (document.visibilityState === 'visible') {
+      reminders = loadReminders();
+      runDueCheck();
+      scheduleNextCheck();
+    }
   });
-  window.addEventListener('beforeunload', () => window.clearInterval(timer), { once: true });
+
+  window.addEventListener('pageshow', () => {
+    reminders = loadReminders();
+    runDueCheck();
+    scheduleNextCheck();
+  }, { passive: true });
+
+  window.addEventListener('beforeunload', () => {
+    if (checkTimer !== null) window.clearTimeout(checkTimer);
+  }, { once: true });
 
   renderTrigger();
   runDueCheck();
+  scheduleNextCheck();
 }
