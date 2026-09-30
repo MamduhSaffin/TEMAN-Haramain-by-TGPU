@@ -9,6 +9,7 @@ import { initAccessibilityTools } from './accessibility-tools';
 import { initPhraseExpansion } from './phrase-expansion';
 import { initProfileBackup } from './profile-backup';
 import { initSaudiEmergency } from './saudi-emergency';
+import { initTemanReminders } from './teman-reminders';
 import './styles.css';
 import './safe-area.css';
 import './brand-logo.css';
@@ -19,6 +20,7 @@ import './accessibility-tools.css';
 import './phrase-expansion.css';
 import './profile-backup.css';
 import './saudi-emergency.css';
+import './teman-reminders.css';
 
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -34,6 +36,7 @@ initAccessibilityTools();
 initPhraseExpansion();
 initProfileBackup();
 initSaudiEmergency();
+initTemanReminders();
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
