@@ -1,0 +1,55 @@
+.textSizeToggle{
+  flex:none;
+  min-width:54px;
+  min-height:46px;
+  border:2px solid #bfd5c7;
+  border-radius:14px;
+  background:#fff;
+  color:#0b5d3b;
+  font-weight:950;
+  font-size:18px;
+  cursor:pointer;
+  box-shadow:0 4px 12px rgba(23,59,45,.06);
+}
+.textSizeToggle.active{background:#0b5d3b;color:#fff;border-color:#0b5d3b}
+
+.seniorTextMode .hero p,.seniorTextMode .sectionHead p{font-size:20px}
+.seniorTextMode .eyebrow{font-size:17px}
+.seniorTextMode .readiness strong{font-size:18px}
+.seniorTextMode .readiness span{font-size:16px}
+.seniorTextMode .cityHeading strong{font-size:16px}
+.seniorTextMode .cityHeading span{font-size:16px}
+.seniorTextMode .citySwitch button{font-size:19px}
+.seniorTextMode .action strong{font-size:26px}
+.seniorTextMode .action span{font-size:18px}
+.seniorTextMode .action.emergency strong{font-size:28px}
+.seniorTextMode .grid button strong,.seniorTextMode .featureGrid .feature strong{font-size:21px}
+.seniorTextMode .grid button span,.seniorTextMode .featureGrid .feature span{font-size:15px}
+.seniorTextMode .field span{font-size:17px}
+.seniorTextMode .field input{font-size:20px;min-height:58px}
+.seniorTextMode .primary{font-size:21px;min-height:72px}
+.seniorTextMode .contactRow button,.seniorTextMode .shareRow button{font-size:18px}
+.seniorTextMode .phraseList button{font-size:19px}
+.seniorTextMode .helpCard>p:not(.arabic),.seniorTextMode .translationCard>p:not(.arabic){font-size:20px}
+.seniorTextMode .arabic{font-size:34px}
+.seniorTextMode .facts strong{font-size:20px}
+.seniorTextMode .facts small{font-size:16px}
+.seniorTextMode .guide h3{font-size:24px}
+.seniorTextMode .guide p{font-size:19px}
+.seniorTextMode .notesCard textarea{font-size:20px;line-height:1.65}
+.seniorTextMode .toolLabel,.seniorTextMode .currencyField>span{font-size:18px}
+.seniorTextMode .currencyField small{font-size:16px}
+.seniorTextMode .safetyDock button span{font-size:13px}
+.seniorTextMode .locationToolHead strong{font-size:20px}
+.seniorTextMode .locationToolHead span{font-size:17px}
+.seniorTextMode .locationPrivacy{font-size:14px}
+.seniorTextMode .readinessPanel p,.seniorTextMode .readinessItem span{font-size:16px}
+
+@media(max-width:640px){
+  .textSizeToggle{min-width:50px;min-height:44px;border-radius:13px;font-size:17px}
+  .seniorTextMode .action strong{font-size:24px}
+  .seniorTextMode .action span{font-size:17px}
+  .seniorTextMode .action.emergency strong{font-size:26px}
+  .seniorTextMode .arabic{font-size:31px}
+  .seniorTextMode .safetyDock button span{font-size:12px}
+}
