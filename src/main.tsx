@@ -1,6 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
+import { initTemanUiRefresh } from './ui-refresh';
 import { initUxEnhancements } from './ux-enhancements';
 import { initTravelReadiness } from './travel-readiness';
 import { initLocationTools } from './location-tools';
@@ -25,6 +26,7 @@ createRoot(document.getElementById('root')!).render(
   </React.StrictMode>,
 );
 
+initTemanUiRefresh();
 initUxEnhancements();
 initTravelReadiness();
 initLocationTools();

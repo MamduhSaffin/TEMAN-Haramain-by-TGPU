@@ -1,3 +1,5 @@
+import { onTemanUiRefresh } from './ui-refresh';
+
 type ReadinessLocale = 'ms' | 'en' | 'ar';
 
 type SavedProfile = {
@@ -266,11 +268,10 @@ export function initTravelReadiness() {
     });
   }
 
-  const observer = new MutationObserver(() => {
+  onTemanUiRefresh(() => {
     renderTrigger();
     if (!overlay.hidden) renderOverlay();
   });
-  observer.observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['lang', 'dir'] });
 
   renderTrigger();
 }

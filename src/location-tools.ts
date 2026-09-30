@@ -1,3 +1,5 @@
+import { onTemanUiRefresh } from './ui-refresh';
+
 type Locale = 'ms' | 'en' | 'ar';
 
 type StoredLocation = {
@@ -120,7 +122,6 @@ export function initLocationTools() {
   let locating = false;
   let statusMessage = '';
   let copied = false;
-  let lastLang: Locale | null = null;
 
   const locationText = (location: StoredLocation) => {
     const t = COPY[locale()];
@@ -275,13 +276,6 @@ export function initLocationTools() {
     updateEmergencyFact();
   };
 
-  const observer = new MutationObserver(() => {
-    const lang = locale();
-    if (document.querySelector('.emergencyPage') || lang !== lastLang) {
-      lastLang = lang;
-      render();
-    }
-  });
-  observer.observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['lang', 'dir'] });
+  onTemanUiRefresh(render);
   window.setTimeout(render, 0);
 }

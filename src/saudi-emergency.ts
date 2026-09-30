@@ -1,3 +1,5 @@
+import { onTemanUiRefresh, requestTemanUiRefresh } from './ui-refresh';
+
 type Locale = 'ms' | 'en' | 'ar';
 
 type Profile = {
@@ -199,7 +201,10 @@ export function initSaudiEmergency() {
     const meeting = loadLocation('teman-meeting-point'); tools.querySelector<HTMLButtonElement>('[data-open-meeting]')!.disabled = !meeting; tools.querySelector<HTMLButtonElement>('[data-share-meeting]')!.disabled = !meeting;
   };
 
-  document.addEventListener('click', event => { const target = event.target as HTMLElement; if (target.closest('.citySwitch')) window.setTimeout(render, 0); });
-  const observer = new MutationObserver(render); observer.observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['lang', 'class'] });
+  document.addEventListener('click', event => {
+    const target = event.target as HTMLElement;
+    if (target.closest('.citySwitch')) requestTemanUiRefresh();
+  });
+  onTemanUiRefresh(render);
   window.setTimeout(render, 0);
 }
