@@ -42,7 +42,7 @@ export function renderFamilyView(root: HTMLElement) {
   document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
 
   let latest: FamilyStatus | null = null;
-  let message = t.loading;
+  let message: string = t.loading;
   let refreshing = false;
   let inactive = false;
 
