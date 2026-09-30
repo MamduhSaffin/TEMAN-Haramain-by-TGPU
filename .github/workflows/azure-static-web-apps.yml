@@ -20,6 +20,18 @@ jobs:
           submodules: true
           lfs: false
 
+      - name: Prepare pinned Haramain offline map packs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p public/maps
+          SATU_MAP_SHA="59ca2c8535b83b77e6f41ab80584e29cd5c05794"
+          curl --fail --location --retry 3 "https://raw.githubusercontent.com/MamduhSaffin/SATU/${SATU_MAP_SHA}/public/maps/makkah.pmtiles" --output public/maps/makkah.pmtiles
+          curl --fail --location --retry 3 "https://raw.githubusercontent.com/MamduhSaffin/SATU/${SATU_MAP_SHA}/public/maps/madinah.pmtiles" --output public/maps/madinah.pmtiles
+          test -s public/maps/makkah.pmtiles
+          test -s public/maps/madinah.pmtiles
+          ls -lh public/maps/*.pmtiles
+
       - name: Build and deploy to Azure Static Web Apps
         uses: Azure/static-web-apps-deploy@v1
         with:

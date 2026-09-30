@@ -13,6 +13,7 @@ import { initTemanReminders } from './teman-reminders';
 import { initFamilyLink } from './family-link';
 import { initFamilySmsFallback } from './family-sms';
 import { initOfflineEmergencyCard } from './offline-card';
+import { initOfflineMap } from './offline-map';
 import { isFamilyViewRoute, renderFamilyView } from './family-view';
 import './styles.css';
 import './safe-area.css';
@@ -28,6 +29,7 @@ import './teman-reminders.css';
 import './family-link.css';
 import './family-sms.css';
 import './offline-card.css';
+import './offline-map.css';
 
 const rootElement = document.getElementById('root')!;
 
@@ -52,6 +54,7 @@ if (isFamilyViewRoute()) {
   initFamilyLink();
   initFamilySmsFallback();
   initOfflineEmergencyCard();
+  initOfflineMap();
 }
 
 if ('serviceWorker' in navigator) {

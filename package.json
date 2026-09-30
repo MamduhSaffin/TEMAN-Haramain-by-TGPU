@@ -15,7 +15,9 @@
     "react": "latest",
     "react-dom": "latest",
     "lucide-react": "latest",
-    "qrcode": "^1.5.4"
+    "qrcode": "^1.5.4",
+    "maplibre-gl": "^6.11.2",
+    "pmtiles": "^4.3.0"
   },
   "devDependencies": {
     "@types/react": "latest",
