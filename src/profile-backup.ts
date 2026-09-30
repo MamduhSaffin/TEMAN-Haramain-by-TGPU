@@ -1,3 +1,5 @@
+import { onTemanUiRefresh } from './ui-refresh';
+
 type Locale = 'ms' | 'en' | 'ar';
 
 type Profile = {
@@ -263,7 +265,6 @@ export function initProfileBackup() {
     card.querySelector<HTMLElement>('[data-privacy]')!.textContent = t.privacy;
   };
 
-  const observer = new MutationObserver(render);
-  observer.observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['lang'] });
+  onTemanUiRefresh(render);
   window.setTimeout(render, 0);
 }
