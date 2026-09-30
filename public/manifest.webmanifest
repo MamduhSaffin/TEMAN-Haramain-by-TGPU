@@ -1,0 +1,21 @@
+{
+  "name": "TEMAN Haramain by TGPU",
+  "short_name": "TEMAN",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F3F7F4",
+  "theme_color": "#0B5D3B",
+  "lang": "ms",
+  "description": "Safety-first Hajj & Umrah companion for Malaysian pilgrims and families.",
+  "icons": [
+    {
+      "src": "/teman-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
