@@ -10,12 +10,13 @@
   "theme_color": "#0B5D3B",
   "lang": "ms",
   "description": "Safety-first Hajj & Umrah companion for Malaysian pilgrims and families.",
+  "categories": ["travel", "utilities", "lifestyle"],
   "icons": [
     {
-      "src": "/teman-icon.svg",
+      "src": "/teman-icon.svg?v=3",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }
