@@ -1,0 +1,31 @@
+.brand .mark{
+  width:132px;
+  height:99px;
+  flex:0 0 132px;
+  border-radius:0;
+  background:transparent url('./file_00000000a84882119762fedf7679a6b4.png') center/contain no-repeat;
+  box-shadow:none;
+  color:transparent;
+  font-size:0;
+  overflow:hidden;
+}
+
+.brand>div:last-child{
+  display:none;
+}
+
+.brand{
+  min-width:132px;
+}
+
+@media(max-width:640px){
+  .brand .mark{
+    width:112px;
+    height:84px;
+    flex-basis:112px;
+  }
+
+  .brand{
+    min-width:112px;
+  }
+}
