@@ -6,6 +6,7 @@ import { initTravelReadiness } from './travel-readiness';
 import { initLocationTools } from './location-tools';
 import { initAccessibilityTools } from './accessibility-tools';
 import { initPhraseExpansion } from './phrase-expansion';
+import { initProfileBackup } from './profile-backup';
 import './styles.css';
 import './safe-area.css';
 import './brand-logo.css';
@@ -14,6 +15,7 @@ import './travel-readiness.css';
 import './location-tools.css';
 import './accessibility-tools.css';
 import './phrase-expansion.css';
+import './profile-backup.css';
 
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -26,6 +28,7 @@ initTravelReadiness();
 initLocationTools();
 initAccessibilityTools();
 initPhraseExpansion();
+initProfileBackup();
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
