@@ -31,6 +31,7 @@ const COPY = {
     status: 'Status', time: 'Masa', hotel: 'Hotel', groupBus: 'Kumpulan / Bas',
     fallback: 'Saya menggunakan TEMAN Haramain. Tolong hubungi saya apabila menerima SMS ini.',
     footer: 'Dihantar melalui TEMAN Haramain. SMS tidak memerlukan internet.',
+    copied: 'Mesej TEMAN telah disalin. Buka aplikasi SMS dan tampal mesej jika diperlukan.',
   },
   en: {
     button: '📱 SEND FAMILY SMS',
@@ -40,6 +41,7 @@ const COPY = {
     status: 'Status', time: 'Time', hotel: 'Hotel', groupBus: 'Group / Bus',
     fallback: 'I am using TEMAN Haramain. Please contact me when you receive this SMS.',
     footer: 'Sent through TEMAN Haramain. SMS does not require internet.',
+    copied: 'The TEMAN message was copied. Open your SMS app and paste it if needed.',
   },
   ar: {
     button: '📱 إرسال رسالة SMS للأسرة',
@@ -49,6 +51,7 @@ const COPY = {
     status: 'الحالة', time: 'الوقت', hotel: 'الفندق', groupBus: 'المجموعة / الحافلة',
     fallback: 'أستخدم TEMAN Haramain. يرجى الاتصال بي عند استلام هذه الرسالة.',
     footer: 'أرسلت عبر TEMAN Haramain. رسائل SMS لا تحتاج إلى الإنترنت.',
+    copied: 'تم نسخ رسالة TEMAN. افتح تطبيق الرسائل والصقها إذا لزم الأمر.',
   },
 } as const;
 
@@ -76,8 +79,8 @@ function currentHotel(p: Profile): string {
 }
 
 function formatTime(value: number | undefined, lang: Locale): string {
-  if (!value) return new Date().toLocaleString(lang === 'ar' ? 'ar-SA' : lang === 'en' ? 'en-GB' : 'ms-MY', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
-  return new Date(value).toLocaleString(lang === 'ar' ? 'ar-SA' : lang === 'en' ? 'en-GB' : 'ms-MY', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+  const date = value ? new Date(value) : new Date();
+  return date.toLocaleString(lang === 'ar' ? 'ar-SA' : lang === 'en' ? 'en-GB' : 'ms-MY', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
 }
 
 function buildSms(): { phone: string; text: string } | null {
@@ -106,7 +109,27 @@ function buildSms(): { phone: string; text: string } | null {
   return { phone, text: lines.join('\n') };
 }
 
-function openSms() {
+async function copyText(text: string): Promise<boolean> {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+    const area = document.createElement('textarea');
+    area.value = text;
+    area.style.position = 'fixed';
+    area.style.opacity = '0';
+    document.body.appendChild(area);
+    area.select();
+    const copied = document.execCommand('copy');
+    area.remove();
+    return copied;
+  } catch {
+    return false;
+  }
+}
+
+async function openSms() {
   const lang = locale();
   const t = COPY[lang];
   const payload = buildSms();
@@ -117,9 +140,31 @@ function openSms() {
 
   if (!latestCheckIn()) window.alert(t.noStatus);
 
-  const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const userAgent = navigator.userAgent || '';
+  const isInAppBrowser = /\bwv\b|FBAN|FBAV|Instagram|ChatGPT/i.test(userAgent);
+
+  if (isInAppBrowser) {
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'TEMAN Haramain', text: payload.text });
+        return;
+      } catch {
+        // Continue to clipboard fallback when the share sheet is unavailable or dismissed.
+      }
+    }
+    if (await copyText(payload.text)) window.alert(t.copied);
+    return;
+  }
+
+  const isiOS = /iPad|iPhone|iPod/.test(userAgent);
   const separator = isiOS ? '&' : '?';
-  window.location.href = `sms:${payload.phone}${separator}body=${encodeURIComponent(payload.text)}`;
+  const smsUri = `sms:${payload.phone}${separator}body=${encodeURIComponent(payload.text)}`;
+  const link = document.createElement('a');
+  link.href = smsUri;
+  link.style.display = 'none';
+  document.body.appendChild(link);
+  link.click();
+  window.setTimeout(() => link.remove(), 0);
 }
 
 export function initFamilySmsFallback() {
@@ -129,7 +174,7 @@ export function initFamilySmsFallback() {
   button.type = 'button';
   button.className = 'temanFamilySmsFallback';
   button.setAttribute('aria-label', COPY[locale()].button);
-  button.addEventListener('click', openSms);
+  button.addEventListener('click', () => void openSms());
 
   const label = document.createElement('b');
   const hint = document.createElement('span');
