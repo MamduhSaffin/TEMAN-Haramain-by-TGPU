@@ -1,10 +1,31 @@
 import { useEffect, useMemo, useState } from 'react';
-import { AlertTriangle, ArrowLeft, Building2, Bus, Languages, MapPin, Phone, ShieldCheck, UserRound, UsersRound, Volume2 } from 'lucide-react';
+import {
+  AlertTriangle,
+  ArrowLeft,
+  Building2,
+  Bus,
+  Calculator,
+  CheckCircle2,
+  Copy,
+  Languages,
+  MapPin,
+  NotebookPen,
+  Phone,
+  Save,
+  Share2,
+  ShieldCheck,
+  UserRound,
+  UsersRound,
+  Volume2,
+  Wifi,
+  WifiOff,
+} from 'lucide-react';
 
 type Locale = 'ms' | 'ar' | 'en';
-type Page = 'home' | 'setup' | 'emergency' | 'translate' | 'ibadah';
+type Page = 'home' | 'setup' | 'emergency' | 'translate' | 'ibadah' | 'notes' | 'currency';
 type City = 'makkah' | 'madinah';
 type EmergencyKind = 'lost' | 'unwell' | 'bus';
+type CurrencyDirection = 'sar-myr' | 'myr-sar';
 type Profile = {
   pilgrimName: string;
   preferredName: string;
@@ -33,6 +54,7 @@ const COPY = {
     helpHint: 'Sesat, sakit, terpisah atau perlukan bantuan', hotel: 'BALIK KE HOTEL', hotelHint: 'Belum ada hotel untuk bandar ini',
     group: 'CARI KUMPULAN SAYA', groupHint: 'Kumpulan, bas dan mutawwif', translate: 'CAKAP & TERJEMAH', translateHint: 'Bahasa Melayu ⇄ العربية ⇄ English',
     ibadah: 'PANDUAN IBADAH', ibadahHint: 'Panduan ringkas Umrah / Haji', setup: 'SEDIAKAN PROFIL JEMAAH', setupHint: 'Anak / keluarga isi sebelum berlepas',
+    notes: 'SATU NOTES', notesHint: 'Simpan nota penting pada telefon', currency: 'KIRA CURRENCY', currencyHint: 'Riyal Saudi ⇄ Ringgit Malaysia',
     saved: 'Profil disimpan pada peranti', notReady: 'Profil belum lengkap', ready: 'PROFIL KESELAMATAN SEDIA', back: 'Kembali', save: 'Simpan Profil',
     setupTitle: 'Sediakan TEMAN untuk Ayah / Ibu', setupIntro: 'Isi maklumat yang akan membantu jika jemaah sesat, terpisah atau perlukan bantuan.',
     name: 'Nama penuh jemaah', preferred: 'Nama panggilan', makkah: 'Hotel Makkah', madinah: 'Hotel Madinah', makkahAddress: 'Alamat / lokasi hotel Makkah', madinahAddress: 'Alamat / lokasi hotel Madinah',
@@ -44,14 +66,21 @@ const COPY = {
     choosePhrase: 'Pilih frasa', phraseLost: 'Saya sesat dan mahu balik ke hotel.', phraseBus: 'Saya tidak jumpa bas kumpulan saya.', phraseSick: 'Saya tidak sihat dan perlukan bantuan.', phraseGuide: 'Tolong hubungi mutawwif saya.',
     guideTitle: 'Panduan Ibadah Ringkas', guideNote: 'Rujukan ringkas untuk membantu ingatan. Ikuti bimbingan mutawwif dan pihak berautoriti bagi persoalan ibadah.',
     currentCity: 'LOKASI SEMASA', makkahCity: 'Makkah', madinahCity: 'Madinah', locationHint: 'Pilih bandar anda sekarang supaya TEMAN tunjuk hotel yang betul.',
-    editProfile: 'Lengkapkan profil dahulu untuk menggunakan fungsi ini.', selectedIssue: 'Bantuan dipilih',
+    editProfile: 'Lengkapkan profil dahulu untuk menggunakan fungsi ini.', selectedIssue: 'Bantuan dipilih', online: 'ONLINE', offlineReady: 'OFFLINE READY',
+    shareDetails: 'KONGSI BUTIRAN BANTUAN', copyDetails: 'SALIN BUTIRAN', copied: 'Butiran telah disalin',
+    notesTitle: 'SATU Notes', notesIntro: 'Catat nombor bilik, tempat berkumpul, maklumat bas atau perkara penting. Nota disimpan pada telefon ini.',
+    notesPlaceholder: 'Contoh: Berkumpul di Pintu 79 selepas Isyak…', saveNote: 'Simpan Nota', noteSaved: 'Nota disimpan pada peranti',
+    currencyTitle: 'Kira Riyal & Ringgit', currencyIntro: 'Kalkulator ringkas yang boleh digunakan tanpa internet. Masukkan kadar semasa daripada bank atau pengurup wang yang anda percayai.',
+    rateLabel: 'Kadar: 1 SAR = berapa MYR?', amountLabel: 'Jumlah', resultLabel: 'Anggaran', sarToMyr: 'SAR → MYR', myrToSar: 'MYR → SAR',
+    rateHelp: 'Kadar ini disimpan pada telefon. Semak dan kemas kini apabila kadar berubah.',
   },
   en: {
     subtitle: 'Pilgrim safety • Senior friendly', hello: 'Welcome', need: 'What do you need?',
     hint: 'Tap one large button. Important information stays on this phone.', help: 'HELP ME NOW', helpHint: 'Lost, unwell, separated, or need assistance',
     hotel: 'RETURN TO HOTEL', hotelHint: 'No hotel saved for this city', group: 'FIND MY GROUP', groupHint: 'Group, bus, and mutawwif',
     translate: 'SPEAK & TRANSLATE', translateHint: 'Bahasa Melayu ⇄ العربية ⇄ English', ibadah: 'IBADAH GUIDE', ibadahHint: 'Simple Umrah / Hajj guidance',
-    setup: 'PREPARE PILGRIM PROFILE', setupHint: 'Family completes this before travel', saved: 'Profile saved on this device', notReady: 'Profile is incomplete', ready: 'SAFETY PROFILE READY',
+    setup: 'PREPARE PILGRIM PROFILE', setupHint: 'Family completes this before travel', notes: 'SATU NOTES', notesHint: 'Save important notes on this phone',
+    currency: 'CURRENCY', currencyHint: 'Saudi Riyal ⇄ Malaysian Ringgit', saved: 'Profile saved on this device', notReady: 'Profile is incomplete', ready: 'SAFETY PROFILE READY',
     back: 'Back', save: 'Save Profile', setupTitle: 'Prepare TEMAN for Mum / Dad', setupIntro: 'Add information that can help if the pilgrim is lost, separated, or needs assistance.',
     name: 'Pilgrim full name', preferred: 'Preferred name', makkah: 'Makkah hotel', madinah: 'Madinah hotel', makkahAddress: 'Makkah hotel address / location', madinahAddress: 'Madinah hotel address / location',
     groupCode: 'Group code', bus: 'Bus number', mutawwif: 'Mutawwif name', mutawwifPhone: 'Mutawwif phone', family: 'Family contact name', familyPhone: 'Family phone', crisis: 'What happened?',
@@ -61,14 +90,20 @@ const COPY = {
     phraseLost: 'I am lost and want to return to my hotel.', phraseBus: 'I cannot find my group bus.', phraseSick: 'I feel unwell and need help.', phraseGuide: 'Please contact my mutawwif.',
     guideTitle: 'Simple Ibadah Guide', guideNote: 'A simple memory aid. Follow your mutawwif and relevant religious authorities for ibadah questions.',
     currentCity: 'CURRENT LOCATION', makkahCity: 'Makkah', madinahCity: 'Madinah', locationHint: 'Choose where you are now so TEMAN shows the correct hotel.',
-    editProfile: 'Complete the pilgrim profile first to use this function.', selectedIssue: 'Selected assistance',
+    editProfile: 'Complete the pilgrim profile first to use this function.', selectedIssue: 'Selected assistance', online: 'ONLINE', offlineReady: 'OFFLINE READY',
+    shareDetails: 'SHARE HELP DETAILS', copyDetails: 'COPY DETAILS', copied: 'Details copied',
+    notesTitle: 'SATU Notes', notesIntro: 'Keep room numbers, meeting points, bus information, or other important notes. Notes stay on this phone.',
+    notesPlaceholder: 'Example: Meet at Gate 79 after Isha…', saveNote: 'Save Note', noteSaved: 'Note saved on this device',
+    currencyTitle: 'Riyal & Ringgit Calculator', currencyIntro: 'A simple calculator that works offline. Enter the current rate from a bank or money changer you trust.',
+    rateLabel: 'Rate: 1 SAR equals how many MYR?', amountLabel: 'Amount', resultLabel: 'Estimate', sarToMyr: 'SAR → MYR', myrToSar: 'MYR → SAR',
+    rateHelp: 'This rate is stored on your phone. Check and update it when exchange rates change.',
   },
   ar: {
     subtitle: 'سلامة الحجاج والمعتمرين • مناسب لكبار السن', hello: 'السلام عليكم', need: 'ماذا تحتاج؟', hint: 'اضغط على زر واحد فقط. المعلومات المهمة محفوظة على هذا الهاتف.',
     help: 'ساعدني الآن', helpHint: 'ضائع أو مريض أو منفصل عن المجموعة أو تحتاج إلى مساعدة', hotel: 'العودة إلى الفندق', hotelHint: 'لا يوجد فندق محفوظ لهذه المدينة', group: 'العثور على مجموعتي',
     groupHint: 'المجموعة والحافلة والمطوف', translate: 'تحدث وترجم', translateHint: 'Bahasa Melayu ⇄ العربية ⇄ English', ibadah: 'دليل العبادة', ibadahHint: 'إرشادات مبسطة للعمرة والحج',
-    setup: 'إعداد ملف الحاج / المعتمر', setupHint: 'تقوم الأسرة بإكماله قبل السفر', saved: 'تم حفظ الملف على هذا الجهاز', notReady: 'الملف غير مكتمل', ready: 'ملف السلامة جاهز',
-    back: 'رجوع', save: 'حفظ الملف', setupTitle: 'إعداد TEMAN للوالد / الوالدة', setupIntro: 'أدخل المعلومات التي تساعد عند الضياع أو الانفصال عن المجموعة أو الحاجة إلى مساعدة.',
+    setup: 'إعداد ملف الحاج / المعتمر', setupHint: 'تقوم الأسرة بإكماله قبل السفر', notes: 'ملاحظات SATU', notesHint: 'احفظ المعلومات المهمة على هذا الهاتف', currency: 'حاسبة العملات', currencyHint: 'الريال السعودي ⇄ الرينغيت الماليزي',
+    saved: 'تم حفظ الملف على هذا الجهاز', notReady: 'الملف غير مكتمل', ready: 'ملف السلامة جاهز', back: 'رجوع', save: 'حفظ الملف', setupTitle: 'إعداد TEMAN للوالد / الوالدة', setupIntro: 'أدخل المعلومات التي تساعد عند الضياع أو الانفصال عن المجموعة أو الحاجة إلى مساعدة.',
     name: 'الاسم الكامل', preferred: 'الاسم المفضل', makkah: 'فندق مكة', madinah: 'فندق المدينة', makkahAddress: 'عنوان / موقع فندق مكة', madinahAddress: 'عنوان / موقع فندق المدينة',
     groupCode: 'رمز المجموعة', bus: 'رقم الحافلة', mutawwif: 'اسم المطوف', mutawwifPhone: 'هاتف المطوف', family: 'اسم فرد الأسرة', familyPhone: 'هاتف الأسرة', crisis: 'ماذا حدث؟',
     lost: 'أنا ضائع', lostHint: 'اعرض شاشة المساعدة للموظف', unwell: 'أنا مريض', unwellHint: 'اطلب مساعدة طبية وتواصل مع شخص موثوق', busLost: 'لا أجد الحافلة', busLostHint: 'اعرض رقم الحافلة والمجموعة وبيانات المطوف',
@@ -77,7 +112,13 @@ const COPY = {
     phraseLost: 'أنا ضائع وأريد العودة إلى الفندق.', phraseBus: 'لا أجد حافلة مجموعتي.', phraseSick: 'أنا مريض وأحتاج إلى مساعدة.', phraseGuide: 'يرجى الاتصال بالمطوف.',
     guideTitle: 'دليل عبادة مبسط', guideNote: 'مرجع مختصر للتذكير. اتبع إرشادات المطوف والجهات الشرعية الموثوقة في مسائل العبادة.',
     currentCity: 'الموقع الحالي', makkahCity: 'مكة', madinahCity: 'المدينة', locationHint: 'اختر المدينة التي أنت فيها الآن ليعرض TEMAN الفندق الصحيح.',
-    editProfile: 'أكمل ملف الحاج أو المعتمر أولاً لاستخدام هذه الوظيفة.', selectedIssue: 'المساعدة المختارة',
+    editProfile: 'أكمل ملف الحاج أو المعتمر أولاً لاستخدام هذه الوظيفة.', selectedIssue: 'المساعدة المختارة', online: 'متصل', offlineReady: 'جاهز دون اتصال',
+    shareDetails: 'مشاركة تفاصيل المساعدة', copyDetails: 'نسخ التفاصيل', copied: 'تم نسخ التفاصيل',
+    notesTitle: 'ملاحظات SATU', notesIntro: 'احفظ رقم الغرفة ونقطة التجمع ومعلومات الحافلة وأي ملاحظات مهمة. تحفظ الملاحظات على هذا الهاتف.',
+    notesPlaceholder: 'مثال: التجمع عند البوابة 79 بعد العشاء…', saveNote: 'حفظ الملاحظة', noteSaved: 'تم حفظ الملاحظة على الجهاز',
+    currencyTitle: 'حاسبة الريال والرينغيت', currencyIntro: 'حاسبة بسيطة تعمل دون اتصال. أدخل سعر الصرف الحالي من بنك أو صراف تثق به.',
+    rateLabel: 'السعر: 1 ريال سعودي يساوي كم رينغيت؟', amountLabel: 'المبلغ', resultLabel: 'التقدير', sarToMyr: 'SAR → MYR', myrToSar: 'MYR → SAR',
+    rateHelp: 'يتم حفظ السعر على هاتفك. تحقق منه وحدثه عند تغير سعر الصرف.',
   },
 } as const;
 
@@ -147,6 +188,13 @@ export default function App() {
   const [city, setCityState] = useState<City>(loadCity);
   const [emergencyKind, setEmergencyKind] = useState<EmergencyKind>('lost');
   const [phraseIndex, setPhraseIndex] = useState(0);
+  const [online, setOnline] = useState(() => navigator.onLine);
+  const [notes, setNotes] = useState(() => localStorage.getItem('teman-notes') || '');
+  const [noteSaved, setNoteSaved] = useState(false);
+  const [exchangeRate, setExchangeRate] = useState(() => localStorage.getItem('teman-sar-myr-rate') || '');
+  const [currencyAmount, setCurrencyAmount] = useState('100');
+  const [currencyDirection, setCurrencyDirection] = useState<CurrencyDirection>('sar-myr');
+  const [shareState, setShareState] = useState<'idle' | 'copied'>('idle');
   const t = COPY[locale];
   const rtl = locale === 'ar';
 
@@ -157,6 +205,12 @@ export default function App() {
   const selectedPhrase = PHRASES[phraseIndex];
   const emergencyMessage = EMERGENCY_MESSAGES[emergencyKind];
   const emergencyLabel = useMemo(() => ({ lost: t.lost, unwell: t.unwell, bus: t.busLost }[emergencyKind]), [emergencyKind, t]);
+  const currencyResult = useMemo(() => {
+    const amount = Number.parseFloat(currencyAmount);
+    const rate = Number.parseFloat(exchangeRate);
+    if (!Number.isFinite(amount) || !Number.isFinite(rate) || rate <= 0) return null;
+    return currencyDirection === 'sar-myr' ? amount * rate : amount / rate;
+  }, [currencyAmount, exchangeRate, currencyDirection]);
 
   useEffect(() => {
     document.documentElement.lang = locale;
@@ -166,6 +220,16 @@ export default function App() {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'auto' });
   }, [page]);
+
+  useEffect(() => {
+    const update = () => setOnline(navigator.onLine);
+    window.addEventListener('online', update);
+    window.addEventListener('offline', update);
+    return () => {
+      window.removeEventListener('online', update);
+      window.removeEventListener('offline', update);
+    };
+  }, []);
 
   const setLang = (next: Locale) => {
     setLocale(next);
@@ -199,6 +263,18 @@ export default function App() {
     setPage('home');
   };
 
+  const saveNotes = () => {
+    localStorage.setItem('teman-notes', notes);
+    setNoteSaved(true);
+    window.setTimeout(() => setNoteSaved(false), 2200);
+  };
+
+  const updateRate = (value: string) => {
+    setExchangeRate(value);
+    if (value) localStorage.setItem('teman-sar-myr-rate', value);
+    else localStorage.removeItem('teman-sar-myr-rate');
+  };
+
   const speak = (text: string, lang = 'ar-SA') => {
     if (!('speechSynthesis' in window)) return;
     window.speechSynthesis.cancel();
@@ -226,7 +302,48 @@ export default function App() {
 
   const chooseEmergency = (kind: EmergencyKind) => {
     setEmergencyKind(kind);
+    setShareState('idle');
     window.setTimeout(() => document.getElementById('help-card')?.scrollIntoView({ block: 'start' }), 0);
+  };
+
+  const emergencyText = () => [
+    'TEMAN Haramain by TGPU',
+    emergencyLabel,
+    emergencyMessage.en,
+    `City: ${city === 'makkah' ? 'Makkah' : 'Madinah'}`,
+    `Hotel: ${hotel || '—'}${hotelAddress ? ` — ${hotelAddress}` : ''}`,
+    `Group: ${profile.groupCode || '—'}${profile.busNumber ? ` • Bus ${profile.busNumber}` : ''}`,
+    `Mutawwif: ${profile.mutawwifName || '—'} ${profile.mutawwifPhone || ''}`.trim(),
+    `Family: ${profile.familyName || '—'} ${profile.familyPhone || ''}`.trim(),
+  ].join('\n');
+
+  const shareEmergency = async () => {
+    const text = emergencyText();
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: 'TEMAN Haramain', text });
+        return;
+      }
+      await navigator.clipboard.writeText(text);
+      setShareState('copied');
+    } catch {
+      try {
+        await navigator.clipboard.writeText(text);
+        setShareState('copied');
+      } catch {
+        setShareState('idle');
+      }
+    }
+  };
+
+  const copyEmergency = async () => {
+    try {
+      await navigator.clipboard.writeText(emergencyText());
+      setShareState('copied');
+      window.setTimeout(() => setShareState('idle'), 2200);
+    } catch {
+      setShareState('idle');
+    }
   };
 
   const field = (key: keyof Profile, label: string, placeholder = '') => {
@@ -269,7 +386,10 @@ export default function App() {
     </header>
 
     {page === 'home' && <main className="page">
-      <section className="hero"><span className="eyebrow">{t.subtitle}</span><h1>{t.hello}{profile.preferredName ? `, ${profile.preferredName}` : ''}</h1><h2>{t.need}</h2><p>{t.hint}</p></section>
+      <section className="hero">
+        <div className="heroTop"><span className="eyebrow">{t.subtitle}</span><span className={online ? 'networkStatus online' : 'networkStatus offline'}>{online ? <Wifi size={17}/> : <WifiOff size={17}/>} {online ? t.online : t.offlineReady}</span></div>
+        <h1>{t.hello}{profile.preferredName ? `, ${profile.preferredName}` : ''}</h1><h2>{t.need}</h2><p>{t.hint}</p>
+      </section>
       <div className={ready ? 'readiness ready' : 'readiness'} role="status" aria-live="polite"><ShieldCheck size={22}/><div><strong>{ready ? t.ready : t.notReady}</strong><span>{ready ? t.saved : t.setupHint}</span></div></div>
       {citySelector}
       <button type="button" className="action emergency" onClick={() => setPage('emergency')}><AlertTriangle size={32}/><div><strong>{t.help}</strong><span>{t.helpHint}</span></div><b aria-hidden="true">→</b></button>
@@ -277,10 +397,12 @@ export default function App() {
         <button type="button" className="action" onClick={openHotel}><Building2 size={28}/><div><strong>{t.hotel}</strong><span>{hotel || t.hotelHint}</span></div><b aria-hidden="true">→</b></button>
         <button type="button" className="action" onClick={() => { setEmergencyKind('bus'); setPage('emergency'); }}><UsersRound size={28}/><div><strong>{t.group}</strong><span>{profile.groupCode || profile.busNumber || t.groupHint}</span></div><b aria-hidden="true">→</b></button>
       </div>
-      <div className="grid">
-        <button type="button" onClick={() => setPage('translate')}><Languages/><strong>{t.translate}</strong><span>{t.translateHint}</span></button>
-        <button type="button" onClick={() => setPage('ibadah')}><UserRound/><strong>{t.ibadah}</strong><span>{t.ibadahHint}</span></button>
-        <button type="button" onClick={() => { setDraft(profile); setPage('setup'); }}><ShieldCheck/><strong>{t.setup}</strong><span>{t.setupHint}</span></button>
+      <div className="grid featureGrid">
+        <button type="button" className="feature translateFeature" onClick={() => setPage('translate')}><Languages/><strong>{t.translate}</strong><span>{t.translateHint}</span></button>
+        <button type="button" className="feature ibadahFeature" onClick={() => setPage('ibadah')}><UserRound/><strong>{t.ibadah}</strong><span>{t.ibadahHint}</span></button>
+        <button type="button" className="feature notesFeature" onClick={() => setPage('notes')}><NotebookPen/><strong>{t.notes}</strong><span>{t.notesHint}</span></button>
+        <button type="button" className="feature currencyFeature" onClick={() => setPage('currency')}><Calculator/><strong>{t.currency}</strong><span>{t.currencyHint}</span></button>
+        <button type="button" className="feature profileFeature" onClick={() => { setDraft(profile); setPage('setup'); }}><ShieldCheck/><strong>{t.setup}</strong><span>{t.setupHint}</span></button>
       </div>
     </main>}
 
@@ -294,7 +416,7 @@ export default function App() {
       <button type="button" className="primary" onClick={saveProfile}>{t.save} →</button>
     </main>}
 
-    {page === 'emergency' && <main className="page">{back}<section className="sectionHead"><h1>{t.crisis}</h1><p>{t.helpHint}</p></section>
+    {page === 'emergency' && <main className="page emergencyPage">{back}<section className="sectionHead"><h1>{t.crisis}</h1><p>{t.helpHint}</p></section>
       {citySelector}
       <div className="emergencyChoices" role="group" aria-label={t.crisis}>
         <button type="button" className={`action emergencyChoice ${emergencyKind === 'lost' ? 'selected' : ''}`} aria-pressed={emergencyKind === 'lost'} onClick={() => chooseEmergency('lost')}><MapPin size={32}/><div><strong>{t.lost}</strong><span>{t.lostHint}</span></div><b aria-hidden="true">→</b></button>
@@ -313,6 +435,7 @@ export default function App() {
           <div><span>MUTAWWIF / مسؤول المجموعة</span><strong>{profile.mutawwifName || '—'} {profile.mutawwifPhone}</strong></div>
         </div>
         <div className="contactRow"><button type="button" onClick={() => speak(emergencyMessage.ar)}><Volume2/> {t.speakArabic}</button><button type="button" disabled={!hotel && !hotelAddress} onClick={openHotel}><MapPin/> {t.openMap}</button></div>
+        <div className="shareRow"><button type="button" onClick={shareEmergency}><Share2/> {t.shareDetails}</button><button type="button" onClick={copyEmergency}>{shareState === 'copied' ? <CheckCircle2/> : <Copy/>} {shareState === 'copied' ? t.copied : t.copyDetails}</button></div>
       </section>
     </main>}
 
@@ -323,6 +446,27 @@ export default function App() {
 
     {page === 'ibadah' && <main className="page">{back}<section className="sectionHead"><h1>{t.guideTitle}</h1><p>{t.guideNote}</p></section>
       <div className="guide">{GUIDE[locale].map((item, index) => <article key={item.title}><b>{index + 1}</b><div><h3>{item.title}</h3><p>{item.body}</p></div></article>)}</div>
+    </main>}
+
+    {page === 'notes' && <main className="page">{back}<section className="sectionHead"><h1>{t.notesTitle}</h1><p>{t.notesIntro}</p></section>
+      <section className="toolCard notesCard">
+        <label className="toolLabel" htmlFor="teman-notes">{t.notesTitle}</label>
+        <textarea id="teman-notes" value={notes} onChange={e => { setNotes(e.target.value); setNoteSaved(false); }} placeholder={t.notesPlaceholder} rows={10}/>
+        <button type="button" className="primary" onClick={saveNotes}>{noteSaved ? <CheckCircle2/> : <Save/>} {noteSaved ? t.noteSaved : t.saveNote}</button>
+      </section>
+    </main>}
+
+    {page === 'currency' && <main className="page">{back}<section className="sectionHead"><h1>{t.currencyTitle}</h1><p>{t.currencyIntro}</p></section>
+      <section className="toolCard currencyCard">
+        <div className="directionSwitch" role="group" aria-label={t.currencyTitle}>
+          <button type="button" className={currencyDirection === 'sar-myr' ? 'active' : ''} aria-pressed={currencyDirection === 'sar-myr'} onClick={() => setCurrencyDirection('sar-myr')}>{t.sarToMyr}</button>
+          <button type="button" className={currencyDirection === 'myr-sar' ? 'active' : ''} aria-pressed={currencyDirection === 'myr-sar'} onClick={() => setCurrencyDirection('myr-sar')}>{t.myrToSar}</button>
+        </div>
+        <label className="currencyField"><span>{t.rateLabel}</span><div className="currencyInput"><b>1 SAR =</b><input type="number" min="0" step="0.001" inputMode="decimal" value={exchangeRate} onChange={e => updateRate(e.target.value)} placeholder="1.15"/><b>MYR</b></div><small>{t.rateHelp}</small></label>
+        <label className="currencyField"><span>{t.amountLabel}</span><div className="currencyInput amountInput"><input type="number" min="0" step="0.01" inputMode="decimal" value={currencyAmount} onChange={e => setCurrencyAmount(e.target.value)} /><b>{currencyDirection === 'sar-myr' ? 'SAR' : 'MYR'}</b></div></label>
+        <div className="quickAmounts" aria-label="Quick amounts">{[10, 50, 100, 500].map(value => <button type="button" key={value} onClick={() => setCurrencyAmount(String(value))}>{value}</button>)}</div>
+        <div className="currencyResult" aria-live="polite"><span>{t.resultLabel}</span><strong>{currencyResult === null ? '—' : currencyResult.toLocaleString(locale === 'ar' ? 'ar-SA' : locale === 'ms' ? 'ms-MY' : 'en-US', { maximumFractionDigits: 2 })}</strong><b>{currencyDirection === 'sar-myr' ? 'MYR' : 'SAR'}</b></div>
+      </section>
     </main>}
   </div>;
 }
