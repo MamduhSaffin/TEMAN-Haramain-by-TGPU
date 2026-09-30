@@ -1,3 +1,5 @@
+import { onTemanUiRefresh } from './ui-refresh';
+
 type Locale = 'ms' | 'en' | 'ar';
 
 type Phrase = { ms: string; en: string; ar: string };
@@ -67,7 +69,6 @@ export function initPhraseExpansion() {
     });
   };
 
-  const observer = new MutationObserver(render);
-  observer.observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['lang'] });
+  onTemanUiRefresh(render);
   window.setTimeout(render, 0);
 }
