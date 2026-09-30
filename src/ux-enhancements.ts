@@ -49,6 +49,10 @@ function locale(): Locale {
   return 'ms';
 }
 
+function setText(element: Element | null, value: string) {
+  if (element && element.textContent !== value) element.textContent = value;
+}
+
 function copyText(text: string): Promise<void> {
   if (navigator.clipboard?.writeText) return navigator.clipboard.writeText(text);
   return new Promise((resolve, reject) => {
@@ -122,14 +126,15 @@ export function initUxEnhancements() {
 
   const labels = () => {
     const t = COPY[locale()];
-    dock.querySelector<HTMLButtonElement>('[data-nav="home"] span')!.textContent = t.home;
-    dock.querySelector<HTMLButtonElement>('[data-nav="sos"] span')!.textContent = t.sos;
-    dock.querySelector<HTMLButtonElement>('[data-nav="translate"] span')!.textContent = t.translate;
-    dock.querySelector<HTMLButtonElement>('[data-nav="profile"] span')!.textContent = t.profile;
-    showLarge.textContent = t.showLarge;
-    installBanner.querySelector('strong')!.textContent = t.installTitle;
-    installBanner.querySelector('span')!.textContent = t.installText;
-    installBanner.querySelector<HTMLButtonElement>('[data-install]')!.textContent = t.install;
+    setText(dock.querySelector('[data-nav="home"] span'), t.home);
+    setText(dock.querySelector('[data-nav="sos"] span'), t.sos);
+    setText(dock.querySelector('[data-nav="translate"] span'), t.translate);
+    setText(dock.querySelector('[data-nav="profile"] span'), t.profile);
+    setText(showLarge, t.showLarge);
+    setText(installBanner.querySelector('strong'), t.installTitle);
+    setText(installBanner.querySelector('span'), t.installText);
+    setText(installBanner.querySelector('[data-install]'), t.install);
+    installBanner.querySelector<HTMLButtonElement>('[data-dismiss]')?.setAttribute('aria-label', t.notNow);
   };
 
   const updateState = () => {
