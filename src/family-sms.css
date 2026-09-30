@@ -1,0 +1,30 @@
+.temanFamilySmsFallback{
+  display:none;
+  position:fixed;
+  left:50%;
+  bottom:calc(18px + env(safe-area-inset-bottom));
+  transform:translateX(-50%);
+  z-index:1140;
+  width:min(680px,calc(100% - 28px));
+  min-height:64px;
+  border:2px solid #e7c45c;
+  border-radius:18px;
+  padding:11px 16px;
+  background:#fff7d6;
+  color:#5d4508;
+  box-shadow:0 14px 34px rgba(26,40,31,.25);
+  text-align:center;
+  cursor:pointer;
+}
+.teman-family-open .temanFamilySmsFallback{display:block}
+.teman-family-open .temanFamilyOverlay{padding-bottom:calc(110px + env(safe-area-inset-bottom))}
+.temanFamilySmsFallback b,
+.temanFamilySmsFallback span{display:block}
+.temanFamilySmsFallback b{font-size:16px;font-weight:950;line-height:1.2}
+.temanFamilySmsFallback span{margin-top:4px;font-size:12px;font-weight:850;opacity:.78}
+.temanFamilySmsFallback:focus-visible{outline:4px solid rgba(229,179,36,.35);outline-offset:3px}
+@media(max-width:520px){
+  .temanFamilySmsFallback{min-height:60px;border-radius:16px;padding:10px 13px}
+  .temanFamilySmsFallback b{font-size:15px}
+  .temanFamilySmsFallback span{font-size:11px}
+}
