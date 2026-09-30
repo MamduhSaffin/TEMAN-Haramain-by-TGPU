@@ -1,3 +1,5 @@
+import { onTemanUiRefresh } from './ui-refresh';
+
 type Locale = 'ms' | 'en' | 'ar';
 
 const LABELS: Record<Locale, { normal: string; large: string }> = {
@@ -48,7 +50,6 @@ export function initAccessibilityTools() {
     apply();
   };
 
-  const observer = new MutationObserver(ensureButton);
-  observer.observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['lang'] });
+  onTemanUiRefresh(ensureButton);
   window.setTimeout(ensureButton, 0);
 }
