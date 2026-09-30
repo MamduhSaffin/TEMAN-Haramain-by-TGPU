@@ -24,7 +24,7 @@ function localeFromParams(params: URLSearchParams): Locale {
   if (lang.startsWith('ms')) return 'ms';
   return 'en';
 }
-function escapeHtml(value: string) { return value.replace(/[&<>'\"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '\"':'&quot;' }[c] || c)); }
+function escapeHtml(value: string) { return value.replace(/[&<>'"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[c] || c)); }
 function formatTime(value: number, lang: Locale) { return new Date(value).toLocaleString(lang === 'ar' ? 'ar-SA' : lang === 'en' ? 'en-GB' : 'ms-MY', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }); }
 
 export function isFamilyViewRoute() {
