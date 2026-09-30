@@ -57,11 +57,21 @@ button:disabled{cursor:not-allowed}
 .readiness strong{font-size:16px;line-height:1.2}
 .readiness span{font-size:14px;color:#53685c;margin-top:3px;line-height:1.3}
 
+.cityPanel{margin:0 0 18px;padding:16px;background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:0 7px 20px rgba(31,75,55,.05)}
+.cityHeading{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px}
+.cityHeading>div{min-width:0}
+.cityHeading strong{display:block;font-size:14px;letter-spacing:.035em;color:#214b37}
+.cityHeading span{display:block;margin-top:4px;color:#607467;font-size:14px;line-height:1.35}
+.cityHeading svg{flex:none;color:var(--green)}
+.citySwitch{display:grid;grid-template-columns:1fr 1fr;gap:9px;background:#eef4f0;border-radius:16px;padding:5px}
+.citySwitch button{min-height:52px;border:0;border-radius:12px;background:transparent;color:#315342;font-weight:900;font-size:17px;cursor:pointer}
+.citySwitch button.active{background:var(--green);color:#fff;box-shadow:0 4px 14px rgba(11,93,59,.18)}
+
 .action{
   width:100%;min-height:112px;border:1px solid #e2ebe5;border-radius:25px;background:var(--surface);padding:20px 21px;
   display:grid;grid-template-columns:38px 1fr auto;align-items:center;text-align:left;gap:16px;color:var(--ink);
   box-shadow:0 10px 26px rgba(31,75,55,.08);margin:13px 0;cursor:pointer;overflow:hidden;
-  transition:transform .12s ease,box-shadow .12s ease,border-color .12s ease
+  transition:transform .12s ease,box-shadow .12s ease,border-color .12s ease,background .12s ease
 }
 .action:hover{border-color:#bfd5c7;box-shadow:0 13px 30px rgba(31,75,55,.11)}
 .action>svg{width:32px;height:32px;flex:none}
@@ -73,6 +83,12 @@ button:disabled{cursor:not-allowed}
 .action.emergency strong{font-size:25px}
 .action.emergency span,.action.emergency>b{color:#fff2ef}
 .action.emergency:hover{border-color:#7f1d1d;box-shadow:0 16px 36px rgba(158,36,36,.28)}
+
+.emergencyChoices{margin-top:6px}
+.emergencyChoice{border-width:2px}
+.emergencyChoice.selected{background:var(--red);border-color:var(--red);color:#fff;box-shadow:0 14px 32px rgba(158,36,36,.18)}
+.emergencyChoice.selected span,.emergencyChoice.selected>b{color:#fff2ef}
+.emergencyChoice.selected:hover{border-color:#7f1d1d}
 
 .two{display:grid;grid-template-columns:1fr 1fr;gap:13px}
 .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-top:14px}
@@ -94,18 +110,22 @@ button:disabled{cursor:not-allowed}
 
 .contactRow{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:13px 0}
 .contactRow button{min-width:0;min-height:64px;border:0;border-radius:17px;background:var(--green-dark);color:#fff;font-weight:800;font-size:16px;padding:14px;display:flex;align-items:center;justify-content:center;gap:9px;overflow-wrap:anywhere;cursor:pointer}
-.contactRow button:disabled{opacity:.42}
+.contactRow button:disabled{opacity:.42;cursor:not-allowed;filter:grayscale(.2)}
 .contactRow button svg{flex:none}
+.assistNote{margin:9px 0 2px;padding:12px 14px;background:#fff1dc;border:1px solid #e8cfa9;border-radius:14px;color:#6b4b1f;font-weight:700;line-height:1.4}
 
-.helpCard,.translationCard{background:#fff;border:2px solid var(--green);border-radius:27px;padding:23px;margin-top:20px;box-shadow:0 14px 32px rgba(25,70,50,.09);overflow:hidden}
+.helpCard,.translationCard{background:#fff;border:2px solid var(--green);border-radius:27px;padding:23px;margin-top:20px;box-shadow:0 14px 32px rgba(25,70,50,.09);overflow:hidden;scroll-margin-top:110px}
+.helpCardHead{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.helpCardHead>strong{font-size:15px;color:#345848}
 .cardLabel{display:inline-block;font-weight:900;color:#064b2f;background:#e4f0e8;border-radius:999px;padding:7px 10px;font-size:14px}
 .arabic{font-family:"Noto Sans Arabic","Segoe UI",Tahoma,Arial,sans-serif;font-size:30px;line-height:1.85;text-align:right;direction:rtl;overflow-wrap:anywhere;margin:18px 0}
 .helpCard>p:not(.arabic),.translationCard>p:not(.arabic){font-size:18px;line-height:1.55;overflow-wrap:anywhere}
 .facts{display:grid;gap:10px;margin-top:17px}
 .facts div{background:#edf5f0;border-radius:16px;padding:14px;min-width:0;border:1px solid #dce9df}
-.facts span,.facts strong{display:block;overflow-wrap:anywhere}
+.facts span,.facts strong,.facts small{display:block;overflow-wrap:anywhere}
 .facts span{font-size:12px;color:#566d60;font-weight:900;letter-spacing:.02em}
 .facts strong{font-size:18px;margin-top:4px;line-height:1.35}
+.facts small{font-size:14px;line-height:1.4;color:#5d7166;margin-top:5px}
 
 .phraseList{display:grid;gap:10px}
 .phraseList>span{font-weight:800;font-size:16px}
@@ -125,6 +145,8 @@ button:disabled{cursor:not-allowed}
 [dir='rtl'] .action>b{order:-1}
 [dir='rtl'] .back svg{transform:rotate(180deg)}
 [dir='rtl'] .hero h1,[dir='rtl'] .hero h2,[dir='rtl'] .sectionHead h1{letter-spacing:0}
+[dir='rtl'] .cityHeading{flex-direction:row-reverse}
+[dir='rtl'] .cityHeading>div{text-align:right}
 
 @media(max-width:640px){
   .topbar{padding:11px 12px;align-items:center;gap:10px;flex-wrap:wrap}
@@ -145,6 +167,8 @@ button:disabled{cursor:not-allowed}
   .hero p,.sectionHead p{font-size:17px}
   .arabic{font-size:27px;line-height:1.9}
   .helpCard,.translationCard{padding:18px}
+  .cityPanel{padding:14px}
+  .citySwitch button{min-height:56px;font-size:18px}
   [dir='rtl'] .action{grid-template-columns:auto 1fr 34px}
 }
 
@@ -155,6 +179,7 @@ button:disabled{cursor:not-allowed}
   .action span{font-size:15px}
   .hero h1,.sectionHead h1{font-size:30px}
   .arabic{font-size:25px}
+  .cityHeading span{font-size:13px}
 }
 
 @media(prefers-reduced-motion:reduce){
