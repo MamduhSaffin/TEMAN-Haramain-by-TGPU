@@ -14,6 +14,7 @@ import { initFamilyLink } from './family-link';
 import { initFamilySmsFallback } from './family-sms';
 import { initOfflineEmergencyCard } from './offline-card';
 import { isFamilyViewRoute, renderFamilyView } from './family-view';
+import { runStorageMigrations } from './storage-migrations';
 import './styles.css';
 import './safe-area.css';
 import './brand-logo.css';
@@ -105,6 +106,8 @@ function warmOfflineMapEngineForSavedPacks() {
 if (isFamilyViewRoute()) {
   renderFamilyView(rootElement);
 } else {
+  runStorageMigrations();
+
   createRoot(rootElement).render(
     <React.StrictMode>
       <App />
