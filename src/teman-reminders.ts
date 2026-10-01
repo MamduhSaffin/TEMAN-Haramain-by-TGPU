@@ -17,6 +17,8 @@ type TemanReminder = {
   lastTriggeredAt?: number;
 };
 
+export type { ReminderSchedule, TemanReminder, ReminderKind };
+
 type NotificationState = NotificationPermission | 'unsupported';
 
 const STORAGE_KEY = 'teman.reminders.v1';
@@ -159,6 +161,12 @@ function nextOccurrence(reminder: TemanReminder, now = Date.now()): number | und
   if (now < reminder.schedule.startAt) return reminder.schedule.startAt;
   return reminder.schedule.startAt + (Math.floor((now - reminder.schedule.startAt) / interval) + 1) * interval;
 }
+
+export const __reminderTestHooks = {
+  todayAt,
+  currentDueSlot,
+  nextOccurrence,
+};
 
 function toLocalInput(value: number) {
   const date = new Date(value);

@@ -292,10 +292,12 @@ function validateV2Backup(raw: Record<string, unknown>): BackupPayloadV2 | null 
   if (!raw.storage || typeof raw.storage !== 'object' || Array.isArray(raw.storage)) return null;
   const storageSource = raw.storage as Record<string, unknown>;
   const storage: BackupStorage = {};
-  BACKUP_STORAGE_KEYS.forEach(key => {
-    const safe = sanitizeStorageValue(key, storageSource[key]);
+  for (const key of BACKUP_STORAGE_KEYS) {
+    const sourceValue = storageSource[key];
+    const safe = sanitizeStorageValue(key, sourceValue);
+    if (sourceValue !== undefined && safe === null) return null;
     if (safe !== null) storage[key] = safe;
-  });
+  }
   return {
     format: 'TEMAN Haramain Backup',
     version: 2,
@@ -412,6 +414,14 @@ function downloadBackup(payload: BackupPayloadV2, profile: Profile) {
   link.remove();
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
+
+export const __profileBackupTestHooks = {
+  buildBackup,
+  validateBackup,
+  applyV2Backup,
+  readPreRestoreSnapshot,
+  restorePreRestoreSnapshot,
+};
 
 export function initProfileBackup() {
   let status = localStorage.getItem(RESTORE_MESSAGE_KEY) || '';
