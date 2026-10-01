@@ -222,7 +222,13 @@ function migrate0To1() {
 }
 
 export function runStorageMigrations() {
-  if (typeof window === 'undefined' || !window.localStorage) return;
+  if (typeof window === 'undefined') return;
+
+  try {
+    void window.localStorage;
+  } catch {
+    return;
+  }
 
   recoverInterruptedMigration();
   let version = parseVersion(localStorage.getItem(VERSION_KEY));
@@ -269,16 +275,24 @@ export function runStorageMigrations() {
     });
   } catch {
     const journal = parseJournal();
+    let restored = false;
     if (journal) {
-      try { restoreSnapshot(journal.values); } catch { /* retry on next startup */ }
+      try {
+        restoreSnapshot(journal.values);
+        restored = true;
+      } catch {
+        // Leave the journal in place so the next startup can retry recovery.
+      }
     }
-    localStorage.removeItem(JOURNAL_KEY);
+    if (restored || !journal) localStorage.removeItem(JOURNAL_KEY);
     writeHealth({
       status: 'failed',
       schemaVersion: parseVersion(localStorage.getItem(VERSION_KEY)),
       supportedVersion: TEMAN_STORAGE_SCHEMA_VERSION,
       checkedAt: Date.now(),
-      detail: 'Storage migration failed and the previous values were restored where possible.',
+      detail: restored
+        ? 'Storage migration failed and the previous values were restored.'
+        : 'Storage migration failed; recovery will be retried on the next startup.',
     });
   }
 }
