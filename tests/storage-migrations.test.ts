@@ -15,7 +15,19 @@ describe('storage migrations', () => {
     expect(localStorage.getItem(VERSION_KEY)).toBe(String(TEMAN_STORAGE_SCHEMA_VERSION));
   });
 
-  it('migrates legacy aliases without overwriting canonical keys', () => {
+  it('copies legacy Family Link aliases into canonical v1 keys', () => {
+    localStorage.setItem('teman.family.checkins', '[{"id":"legacy"}]');
+    localStorage.setItem('teman.family.cloud', '{"familyId":"legacy"}');
+
+    runStorageMigrations();
+
+    expect(localStorage.getItem('teman.family.checkins.v1')).toBe('[{"id":"legacy"}]');
+    expect(localStorage.getItem('teman.family.cloud.v1')).toBe('{"familyId":"legacy"}');
+    expect(localStorage.getItem('teman.family.checkins')).toBeNull();
+    expect(localStorage.getItem('teman.family.cloud')).toBeNull();
+  });
+
+  it('does not overwrite canonical Family Link keys with legacy aliases', () => {
     localStorage.setItem('teman.family.checkins', '[{"id":"legacy"}]');
     localStorage.setItem('teman.family.cloud', '{"familyId":"legacy"}');
     localStorage.setItem('teman.family.checkins.v1', '[{"id":"new"}]');
@@ -27,6 +39,25 @@ describe('storage migrations', () => {
     expect(localStorage.getItem('teman.family.cloud.v1')).toBe('{"familyId":"new"}');
     expect(localStorage.getItem('teman.family.checkins')).toBeNull();
     expect(localStorage.getItem('teman.family.cloud')).toBeNull();
+  });
+
+  it('keeps valid saved Makkah and Madinah hotel/group points intact', () => {
+    const makkahHotel = JSON.stringify({ lat: 21.4225, lng: 39.8262, accuracy: 8, timestamp: 1 });
+    const makkahGroup = JSON.stringify({ lat: 21.423, lng: 39.827, label: 'Group A' });
+    const madinahHotel = JSON.stringify({ lat: 24.4672, lng: 39.6111, accuracy: 12, timestamp: 2 });
+    const madinahGroup = JSON.stringify({ lat: 24.468, lng: 39.612, label: 'Bus' });
+
+    localStorage.setItem('teman-map.hotel.makkah', makkahHotel);
+    localStorage.setItem('teman-map.group.makkah', makkahGroup);
+    localStorage.setItem('teman-map.hotel.madinah', madinahHotel);
+    localStorage.setItem('teman-map.group.madinah', madinahGroup);
+
+    runStorageMigrations();
+
+    expect(localStorage.getItem('teman-map.hotel.makkah')).toBe(makkahHotel);
+    expect(localStorage.getItem('teman-map.group.makkah')).toBe(makkahGroup);
+    expect(localStorage.getItem('teman-map.hotel.madinah')).toBe(madinahHotel);
+    expect(localStorage.getItem('teman-map.group.madinah')).toBe(madinahGroup);
   });
 
   it('quarantines malformed array/object/location values and removes them', () => {
