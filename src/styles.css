@@ -186,3 +186,66 @@ button:disabled{cursor:not-allowed}
   html{scroll-behavior:auto}
   *,*::before,*::after{transition:none!important;animation:none!important}
 }
+
+
+/* TGPU unified mobile shell — TEMAN Haramain.
+   Keeps TEMAN's senior-first safety controls while aligning the visual system
+   with SATU, Muthabbit, Wellness and Iqra. */
+:root{--tgpu-gold:#c99a2e;--tgpu-deep:#043c2c;--tgpu-bg:#f6f8f6}
+@media(max-width:640px){
+ body{background:var(--tgpu-bg)}
+ .shell{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+ .topbar{
+   position:sticky;top:0;z-index:70;
+   display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;
+   padding:max(8px,env(safe-area-inset-top)) 14px 9px;
+   background:rgba(246,248,246,.97);border-bottom:1px solid #e4ebe6;
+   box-shadow:0 4px 18px rgba(4,60,44,.05);backdrop-filter:blur(16px)
+ }
+ .brand{min-width:0!important;gap:9px}
+ .brand .mark{width:62px!important;height:62px!important;flex:0 0 62px!important;border-radius:15px!important}
+ .brand>div:last-child{display:block!important;min-width:0}
+ .brand strong{font-size:21px;line-height:1;color:var(--tgpu-deep);letter-spacing:-.35px}
+ .brand span{font-size:11px;font-weight:900;color:var(--tgpu-gold);letter-spacing:.08em;text-transform:uppercase}
+ .langs{width:auto!important;order:initial!important;display:flex!important;gap:2px;padding:3px;border-radius:12px}
+ .langs button{min-height:40px;padding:6px 8px;font-size:12px}
+ .page{padding:14px 14px 20px;max-width:none}
+ .hero{
+   position:relative;overflow:hidden;margin:0 0 16px;padding:28px 22px 26px;
+   min-height:270px;border-radius:28px;color:#fff;
+   background:radial-gradient(circle at 88% 20%,rgba(255,255,255,.07) 0 18%,transparent 19%),linear-gradient(145deg,var(--tgpu-deep),#0b6e4f 58%,#0a6047);
+   box-shadow:0 15px 38px rgba(4,60,44,.15)
+ }
+ .heroTop{align-items:flex-start}
+ .eyebrow{background:transparent;color:#f4cf67;padding:0;border-radius:0;font-size:12px;letter-spacing:1.2px;text-transform:uppercase}
+ .networkStatus{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.25);color:#fff;font-size:11px;min-height:34px}
+ .networkStatus.offline{background:rgba(244,207,103,.14);border-color:rgba(244,207,103,.4);color:#ffe8a3}
+ .hero h1{margin-top:28px;color:#fff;font-size:38px;line-height:1}
+ .hero h2{color:#fff;font-size:30px;line-height:1.04;margin-top:8px}
+ .hero p{color:rgba(255,255,255,.84);font-size:16px;line-height:1.45;max-width:310px}
+ .readiness,.cityPanel{border-radius:22px;box-shadow:0 8px 24px rgba(4,60,44,.05)}
+ .action{border-radius:22px;box-shadow:0 8px 24px rgba(4,60,44,.06)}
+ .action.emergency{border-radius:25px;box-shadow:0 13px 30px rgba(158,36,36,.2)}
+ .featureGrid .feature,.toolCard,.helpCard,.translationCard,.guide article{border-radius:22px}
+ .sectionHead{padding-top:12px}
+ .sectionHead h1{font-size:34px}
+}
+
+/* Compact persistent app navigation. Emergency remains a large in-page control. */
+.teman-bottom-nav{display:none}
+@media(max-width:640px){
+ .teman-bottom-nav{
+   position:fixed;left:0;right:0;bottom:0;z-index:80;
+   min-height:78px;padding:8px 6px max(9px,env(safe-area-inset-bottom));
+   display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;
+   background:rgba(255,255,255,.98);border-top:1px solid #e5ebe7;
+   box-shadow:0 -8px 24px rgba(4,60,44,.06);backdrop-filter:blur(16px)
+ }
+ .teman-bottom-nav button{
+   min-width:0;min-height:58px;border:0;background:transparent;color:#87938c;
+   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+   padding:3px 2px;font-size:10px;font-weight:800
+ }
+ .teman-bottom-nav button svg{width:24px;height:24px}
+ .teman-bottom-nav button.active{color:var(--green)}
+}
