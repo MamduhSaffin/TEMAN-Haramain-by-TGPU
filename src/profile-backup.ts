@@ -64,8 +64,19 @@ type BackupPayloadV2 = {
 
 type ValidBackup = LegacyBackupPayload | BackupPayloadV2;
 
+type PreRestoreSnapshot = {
+  version: 1;
+  backup: BackupPayloadV2;
+  deviceOnly: {
+    familyCloud?: string;
+    lastLocation?: string;
+  };
+};
+
 const PRE_RESTORE_KEY = 'teman.backup.before-restore.v2';
 const RESTORE_MESSAGE_KEY = 'teman.backup.restore-message.v1';
+const FAMILY_CLOUD_KEY = 'teman.family.cloud.v1';
+const LAST_LOCATION_KEY = 'teman-last-location';
 const MAX_FILE_SIZE = 1_000_000;
 const MAX_JSON_VALUE = 250_000;
 
@@ -171,13 +182,11 @@ function profileReady(profile: Profile) {
 function sanitizeStorageValue(key: BackupStorageKey, value: unknown): string | null {
   if (typeof value !== 'string') return null;
   if (value.length > MAX_JSON_VALUE) return null;
-
   if (key === 'teman-notes') return value.slice(0, 20_000);
   if (key === 'teman-sar-myr-rate') return /^\d{1,4}(?:\.\d{1,6})?$/.test(value) ? value : null;
   if (key === 'teman-city') return value === 'madinah' || value === 'makkah' ? value : null;
   if (key === 'teman-locale') return value === 'ms' || value === 'en' || value === 'ar' ? value : null;
   if (key === 'teman-large-text' || key === 'teman-low-power' || key === 'teman-emergency-tested') return value === '1' || value === '0' ? value : null;
-
   if (JSON_STORAGE_KEYS.has(key)) {
     try {
       const parsed = JSON.parse(value) as unknown;
@@ -191,8 +200,18 @@ function sanitizeStorageValue(key: BackupStorageKey, value: unknown): string | n
       return null;
     }
   }
-
   return null;
+}
+
+function sanitizeDeviceJson(value: string | null): string | undefined {
+  if (!value || value.length > MAX_JSON_VALUE) return undefined;
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    if (!parsed || typeof parsed !== 'object') return undefined;
+    return JSON.stringify(parsed);
+  } catch {
+    return undefined;
+  }
 }
 
 function collectStorage(): BackupStorage {
@@ -271,14 +290,12 @@ function validateLegacyBackup(raw: Record<string, unknown>): LegacyBackupPayload
 function validateV2Backup(raw: Record<string, unknown>): BackupPayloadV2 | null {
   if (raw.version !== 2 || raw.format !== 'TEMAN Haramain Backup' || !raw.profile || typeof raw.profile !== 'object') return null;
   if (!raw.storage || typeof raw.storage !== 'object' || Array.isArray(raw.storage)) return null;
-
   const storageSource = raw.storage as Record<string, unknown>;
   const storage: BackupStorage = {};
   BACKUP_STORAGE_KEYS.forEach(key => {
     const safe = sanitizeStorageValue(key, storageSource[key]);
     if (safe !== null) storage[key] = safe;
   });
-
   return {
     format: 'TEMAN Haramain Backup',
     version: 2,
@@ -301,15 +318,50 @@ function validateBackup(value: unknown): ValidBackup | null {
   return null;
 }
 
+function readPreRestoreSnapshot(): PreRestoreSnapshot | null {
+  const saved = localStorage.getItem(PRE_RESTORE_KEY);
+  if (!saved) return null;
+  try {
+    const raw = JSON.parse(saved) as Record<string, unknown>;
+    if (raw.version !== 1 || !raw.backup) return null;
+    const backup = validateBackup(raw.backup);
+    if (!backup || backup.version !== 2) return null;
+    const deviceRaw = raw.deviceOnly && typeof raw.deviceOnly === 'object' ? raw.deviceOnly as Record<string, unknown> : {};
+    return {
+      version: 1,
+      backup,
+      deviceOnly: {
+        familyCloud: typeof deviceRaw.familyCloud === 'string' ? sanitizeDeviceJson(deviceRaw.familyCloud) : undefined,
+        lastLocation: typeof deviceRaw.lastLocation === 'string' ? sanitizeDeviceJson(deviceRaw.lastLocation) : undefined,
+      },
+    };
+  } catch {
+    return null;
+  }
+}
+
 function savePreRestoreSnapshot() {
   const profile = loadProfile();
-  const hasUsefulData = Object.keys(profile).length > 0 || BACKUP_STORAGE_KEYS.some(key => localStorage.getItem(key) !== null);
+  const hasUsefulData = Object.keys(profile).length > 0 || BACKUP_STORAGE_KEYS.some(key => localStorage.getItem(key) !== null) || localStorage.getItem(FAMILY_CLOUD_KEY) !== null;
   if (!hasUsefulData) return;
+  const snapshot: PreRestoreSnapshot = {
+    version: 1,
+    backup: buildBackup(profile),
+    deviceOnly: {
+      familyCloud: sanitizeDeviceJson(localStorage.getItem(FAMILY_CLOUD_KEY)),
+      lastLocation: sanitizeDeviceJson(localStorage.getItem(LAST_LOCATION_KEY)),
+    },
+  };
   try {
-    localStorage.setItem(PRE_RESTORE_KEY, JSON.stringify(buildBackup(profile)));
+    localStorage.setItem(PRE_RESTORE_KEY, JSON.stringify(snapshot));
   } catch {
     // A failed safety snapshot must not block an intentional restore.
   }
+}
+
+function isolateRestoredIdentity() {
+  localStorage.removeItem(FAMILY_CLOUD_KEY);
+  localStorage.removeItem(LAST_LOCATION_KEY);
 }
 
 function applyV2Backup(payload: BackupPayloadV2, createSafetySnapshot = true) {
@@ -320,6 +372,7 @@ function applyV2Backup(payload: BackupPayloadV2, createSafetySnapshot = true) {
     const value = payload.storage[key];
     if (typeof value === 'string') localStorage.setItem(key, value);
   });
+  if (createSafetySnapshot) isolateRestoredIdentity();
 }
 
 function applyLegacyBackup(payload: LegacyBackupPayload) {
@@ -330,11 +383,20 @@ function applyLegacyBackup(payload: LegacyBackupPayload) {
   else localStorage.removeItem('teman-sar-myr-rate');
   localStorage.setItem('teman-city', payload.city);
   localStorage.setItem('teman-locale', payload.locale);
+  isolateRestoredIdentity();
 }
 
-function applyBackup(payload: ValidBackup, createSafetySnapshot = true) {
-  if (payload.version === 2) applyV2Backup(payload, createSafetySnapshot);
+function applyBackup(payload: ValidBackup) {
+  if (payload.version === 2) applyV2Backup(payload, true);
   else applyLegacyBackup(payload);
+}
+
+function restorePreRestoreSnapshot(snapshot: PreRestoreSnapshot) {
+  applyV2Backup(snapshot.backup, false);
+  localStorage.removeItem(FAMILY_CLOUD_KEY);
+  localStorage.removeItem(LAST_LOCATION_KEY);
+  if (snapshot.deviceOnly.familyCloud) localStorage.setItem(FAMILY_CLOUD_KEY, snapshot.deviceOnly.familyCloud);
+  if (snapshot.deviceOnly.lastLocation) localStorage.setItem(LAST_LOCATION_KEY, snapshot.deviceOnly.lastLocation);
 }
 
 function downloadBackup(payload: BackupPayloadV2, profile: Profile) {
@@ -438,12 +500,15 @@ export function initProfileBackup() {
 
       card.querySelector<HTMLButtonElement>('[data-undo]')?.addEventListener('click', () => {
         const t = COPY[locale()];
-        const saved = localStorage.getItem(PRE_RESTORE_KEY);
-        if (!saved) return;
+        const snapshot = readPreRestoreSnapshot();
+        if (!snapshot) {
+          localStorage.removeItem(PRE_RESTORE_KEY);
+          status = t.invalid;
+          render();
+          return;
+        }
         try {
-          const payload = validateBackup(JSON.parse(saved));
-          if (!payload || payload.version !== 2) throw new Error('invalid safety backup');
-          applyV2Backup(payload, false);
+          restorePreRestoreSnapshot(snapshot);
           localStorage.removeItem(PRE_RESTORE_KEY);
           localStorage.setItem(RESTORE_MESSAGE_KEY, t.undone);
           window.setTimeout(() => window.location.reload(), 250);
@@ -463,7 +528,7 @@ export function initProfileBackup() {
     card.querySelector<HTMLButtonElement>('[data-restore]')!.textContent = t.restore;
     const undo = card.querySelector<HTMLButtonElement>('[data-undo]')!;
     undo.textContent = t.undo;
-    undo.hidden = !localStorage.getItem(PRE_RESTORE_KEY);
+    undo.hidden = !readPreRestoreSnapshot();
     card.querySelector<HTMLElement>('[data-status]')!.textContent = status;
     card.querySelector<HTMLElement>('[data-privacy]')!.textContent = t.privacy;
     card.querySelector<HTMLElement>('[data-map-hint]')!.textContent = t.mapHint;
