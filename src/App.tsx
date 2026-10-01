@@ -19,6 +19,7 @@ import {
   Volume2,
   Wifi,
   WifiOff,
+  Home,
 } from 'lucide-react';
 
 type Locale = 'ms' | 'ar' | 'en';
@@ -375,6 +376,14 @@ export default function App() {
 
   const back = <button type="button" className="back" onClick={() => setPage('home')}><ArrowLeft size={22} /> {t.back}</button>;
 
+  const bottomNav = <nav className="teman-bottom-nav" aria-label="TEMAN navigation">
+    <button type="button" className={page === 'home' ? 'active' : ''} onClick={() => setPage('home')}><Home/><span>{locale === 'ar' ? 'الرئيسية' : locale === 'en' ? 'Home' : 'Utama'}</span></button>
+    <button type="button" className={page === 'emergency' ? 'active' : ''} onClick={() => setPage('emergency')}><ShieldCheck/><span>{locale === 'ar' ? 'مساعدة' : locale === 'en' ? 'Help' : 'Bantuan'}</span></button>
+    <button type="button" className={page === 'translate' ? 'active' : ''} onClick={() => setPage('translate')}><Languages/><span>{locale === 'ar' ? 'ترجمة' : locale === 'en' ? 'Translate' : 'Terjemah'}</span></button>
+    <button type="button" className={page === 'ibadah' ? 'active' : ''} onClick={() => setPage('ibadah')}><UserRound/><span>{locale === 'ar' ? 'عبادة' : 'Ibadah'}</span></button>
+    <button type="button" className={page === 'setup' ? 'active' : ''} onClick={() => { setDraft(profile); setPage('setup'); }}><UserRound/><span>{locale === 'ar' ? 'الملف' : locale === 'en' ? 'Profile' : 'Profil'}</span></button>
+  </nav>;
+
   return <div className="shell" dir={rtl ? 'rtl' : 'ltr'}>
     <header className="topbar">
       <div className="brand"><div className="mark" aria-hidden="true">T</div><div><strong>TEMAN Haramain</strong><span>by TGPU</span></div></div>
@@ -468,5 +477,6 @@ export default function App() {
         <div className="currencyResult" aria-live="polite"><span>{t.resultLabel}</span><strong>{currencyResult === null ? '—' : currencyResult.toLocaleString(locale === 'ar' ? 'ar-SA' : locale === 'ms' ? 'ms-MY' : 'en-US', { maximumFractionDigits: 2 })}</strong><b>{currencyDirection === 'sar-myr' ? 'MYR' : 'SAR'}</b></div>
       </section>
     </main>}
+    {bottomNav}
   </div>;
 }
