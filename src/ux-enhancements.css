@@ -164,7 +164,10 @@ body.has-safety-dock .page{padding-bottom:170px}
 .officerOverlay .officerFacts small{margin-top:5px;font-size:18px;line-height:1.4;color:#52695d}
 
 @media(max-width:640px){
-  body.has-safety-dock .page{padding-bottom:160px}
+  /* The React shell owns mobile navigation. Keep the legacy quick dock desktop-only
+     to avoid two fixed navigation bars competing for the same touch area. */
+  .safetyDock{display:none}
+  body.has-safety-dock .page{padding-bottom:20px}
   .safetyDock{width:calc(100% - 16px);bottom:calc(7px + env(safe-area-inset-bottom));border-radius:20px}
   .safetyDock button{min-height:60px;border-radius:14px}
   .safetyDock button span{font-size:11px}
