@@ -1,17 +1,17 @@
 .brand .mark{
-  width:132px;
-  height:99px;
-  flex:0 0 132px;
-  border-radius:0;
-  background:transparent url('./file_00000000a84882119762fedf7679a6b4.png') center/contain no-repeat;
-  box-shadow:none;
+  width:58px;
+  height:58px;
+  flex:0 0 58px;
+  border-radius:16px;
+  background:transparent url('/teman-icon.svg') center/contain no-repeat;
+  box-shadow:0 6px 16px rgba(11,93,59,.12);
   color:transparent;
   font-size:0;
   overflow:hidden;
 }
 
-.brand>div:last-child{display:none}
-.brand{min-width:132px}
+.brand>div:last-child{display:block;min-width:0}
+.brand{min-width:0}
 
 .heroTop{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .networkStatus{display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:7px 11px;border-radius:999px;font-size:13px;font-weight:900;letter-spacing:.02em;border:1px solid #bad8c4;background:#e7f4eb;color:#0b5d3b}
@@ -57,8 +57,8 @@
 .currencyResult b{font-size:19px;padding-bottom:5px;color:#f2dc98}
 
 @media(max-width:640px){
-  .brand .mark{width:112px;height:84px;flex-basis:112px}
-  .brand{min-width:112px}
+  .brand .mark{width:62px;height:62px;flex-basis:62px}
+  .brand{min-width:0}
   .featureGrid{grid-template-columns:1fr 1fr}
   .featureGrid .feature{min-height:132px;padding:16px}
   .featureGrid .feature strong{font-size:17px}
