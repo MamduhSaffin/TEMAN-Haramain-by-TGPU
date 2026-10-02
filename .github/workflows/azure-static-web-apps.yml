@@ -14,7 +14,7 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: teman-swa-${{ github.workflow }}-${{ github.ref }}
+  group: teman-swa-${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
