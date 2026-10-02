@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /*?family=
+Disallow: /*&family=
+Disallow: /*?token=
+Disallow: /*&token=
+
+Sitemap: https://teman.tgpu.my/sitemap.xml
