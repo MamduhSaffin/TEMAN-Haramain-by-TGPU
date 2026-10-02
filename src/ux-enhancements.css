@@ -198,3 +198,16 @@ body.has-safety-dock .page{padding-bottom:170px}
 }
 
 [dir='rtl'] .installTemanBanner [data-dismiss]{right:auto;left:6px}
+
+
+/* Production shell owns navigation and utility discovery across all viewports. */
+.safetyDock,
+.temanFamilyTrigger,
+.temanOfflineCardTrigger,
+.temanOfflineMapTrigger,
+.travelReadinessTrigger,
+.temanReminderTrigger{display:none!important}
+body.has-safety-dock .page{padding-bottom:84px}
+@media(max-width:640px){
+  body.has-safety-dock .page{padding-bottom:20px}
+}
