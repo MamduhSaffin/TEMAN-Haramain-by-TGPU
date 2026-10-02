@@ -48,7 +48,8 @@ export function initFamilyLinkShortcut() {
           <span class="temanFamilyShortcutArrow" aria-hidden="true">›</span>
         </button>
       `;
-      hero.insertAdjacentElement('afterend', card);
+      const primaryActions = document.querySelector<HTMLElement>('.two');
+      (primaryActions || hero).insertAdjacentElement('afterend', card);
 
       card.querySelector<HTMLButtonElement>('.temanFamilyShortcutButton')?.addEventListener('click', () => {
         document.querySelector<HTMLButtonElement>('.temanFamilyTrigger')?.click();
