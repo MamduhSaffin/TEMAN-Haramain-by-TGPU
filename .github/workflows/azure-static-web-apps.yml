@@ -65,6 +65,47 @@ jobs:
           app_build_command: npm run build
           api_build_command: npm run build
 
+      - name: Verify live production domain
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="https://teman.tgpu.my"
+
+          fetch_with_retry() {
+            local url="$1"
+            local output="$2"
+            for attempt in {1..12}; do
+              if curl --fail --silent --show-error --location --max-time 20 "$url" --output "$output"; then
+                return 0
+              fi
+              if [ "$attempt" -lt 12 ]; then sleep 5; fi
+            done
+            return 1
+          }
+
+          fetch_with_retry "$BASE/" /tmp/teman-index.html
+          grep -Fq '<title>TEMAN Haramain by TGPU</title>' /tmp/teman-index.html
+
+          fetch_with_retry "$BASE/manifest.webmanifest" /tmp/teman-manifest.json
+          grep -Fq '"name": "TEMAN Haramain by TGPU"' /tmp/teman-manifest.json
+
+          fetch_with_retry "$BASE/robots.txt" /tmp/teman-robots.txt
+          grep -Fq 'Sitemap: https://teman.tgpu.my/sitemap.xml' /tmp/teman-robots.txt
+
+          fetch_with_retry "$BASE/sitemap.xml" /tmp/teman-sitemap.xml
+          grep -Fq '<loc>https://teman.tgpu.my/</loc>' /tmp/teman-sitemap.xml
+
+          fetch_with_retry "$BASE/sw.js" /tmp/teman-sw.js
+          grep -Fq "const CACHE = 'teman-shell-v6';" /tmp/teman-sw.js
+          grep -Fq "url.pathname.startsWith('/api/')" /tmp/teman-sw.js
+
+          curl --silent --show-error --location --max-time 20 \
+            --dump-header /tmp/teman-status-headers.txt \
+            --output /tmp/teman-status-body.json \
+            "$BASE/api/family/status?family=production-smoke-check&token=invalid" || true
+          grep -Eiq '^cache-control:.*no-store' /tmp/teman-status-headers.txt
+
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
