@@ -108,29 +108,32 @@ jobs:
 
           CHROME="$(command -v google-chrome || command -v google-chrome-stable || true)"
           test -n "$CHROME"
-          mkdir -p live-qa
-
-          "$CHROME" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --hide-scrollbars \
-            --window-size=390,844 --user-data-dir=/tmp/teman-chrome-mobile \
-            --dump-dom "$BASE/" > live-qa/rendered-mobile.html
-          grep -Fq 'BANTU SAYA SEKARANG' live-qa/rendered-mobile.html
-          grep -Fq 'teman-bottom-nav' live-qa/rendered-mobile.html
+          QA_DIR="$RUNNER_TEMP/teman-live-qa"
+          rm -rf "$QA_DIR"
+          mkdir -p "$QA_DIR"
 
           "$CHROME" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --hide-scrollbars \
             --window-size=390,844 --user-data-dir=/tmp/teman-chrome-mobile-shot \
-            --screenshot="$GITHUB_WORKSPACE/live-qa/teman-mobile.png" "$BASE/"
+            --screenshot="$QA_DIR/teman-mobile.png" "$BASE/"
 
           "$CHROME" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --hide-scrollbars \
             --window-size=1440,1000 --user-data-dir=/tmp/teman-chrome-desktop-shot \
-            --screenshot="$GITHUB_WORKSPACE/live-qa/teman-desktop.png" "$BASE/"
+            --screenshot="$QA_DIR/teman-desktop.png" "$BASE/"
+
+          "$CHROME" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --hide-scrollbars \
+            --window-size=390,844 --user-data-dir=/tmp/teman-chrome-mobile \
+            --dump-dom "$BASE/" > "$QA_DIR/rendered-mobile.html"
+          grep -Fq 'BANTU SAYA SEKARANG' "$QA_DIR/rendered-mobile.html"
+          grep -Fq 'teman-bottom-nav' "$QA_DIR/rendered-mobile.html"
 
       - name: Upload live QA screenshots
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: always() && github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@v4
         with:
           name: teman-live-qa
-          path: live-qa/
+          path: ${{ runner.temp }}/teman-live-qa/
           retention-days: 3
+          if-no-files-found: warn
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
