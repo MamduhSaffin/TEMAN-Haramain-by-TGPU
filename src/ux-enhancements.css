@@ -164,16 +164,24 @@ body.has-safety-dock .page{padding-bottom:170px}
 .officerOverlay .officerFacts small{margin-top:5px;font-size:18px;line-height:1.4;color:#52695d}
 
 @media(max-width:640px){
-  /* The React shell owns mobile navigation. Keep the legacy quick dock desktop-only
-     to avoid two fixed navigation bars competing for the same touch area. */
-  .safetyDock{display:none}
+  /* The React shell owns mobile navigation. Keep legacy floating launchers out of
+     the touch area; their features remain available from the in-page tools panel. */
+  .safetyDock,
+  .temanFamilyTrigger,
+  .temanOfflineCardTrigger,
+  .temanOfflineMapTrigger,
+  .travelReadinessTrigger,
+  .temanReminderTrigger{display:none!important}
   body.has-safety-dock .page{padding-bottom:20px}
   .safetyDock{width:calc(100% - 16px);bottom:calc(7px + env(safe-area-inset-bottom));border-radius:20px}
   .safetyDock button{min-height:60px;border-radius:14px}
   .safetyDock button span{font-size:11px}
-  .showLargeTrigger,.installTemanBanner{bottom:calc(88px + env(safe-area-inset-bottom))}
-  .installTemanBanner{grid-template-columns:1fr auto;padding:12px}
-  .installTemanBanner [data-dismiss]{position:absolute;right:6px;top:-48px;box-shadow:0 4px 12px rgba(24,64,47,.12)}
+  .showLargeTrigger{bottom:calc(88px + env(safe-area-inset-bottom))}
+  .installTemanBanner{
+    position:relative;left:auto;bottom:auto;transform:none;width:calc(100% - 28px);
+    margin:12px auto calc(92px + env(safe-area-inset-bottom));grid-template-columns:1fr auto auto;padding:12px
+  }
+  .installTemanBanner [data-dismiss]{position:static;right:auto;top:auto;box-shadow:none}
   .officerToolbar{align-items:flex-start;flex-direction:column}
   .officerToolbar>div{width:100%;display:grid;grid-template-columns:1fr 1fr 1fr}
   .officerToolbar button{padding:8px 7px;font-size:13px}
