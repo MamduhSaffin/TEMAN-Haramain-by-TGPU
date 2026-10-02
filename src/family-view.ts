@@ -96,5 +96,5 @@ export function renderFamilyView(root: HTMLElement) {
   window.addEventListener('focus', refreshWhenActive);
   document.addEventListener('visibilitychange', refreshWhenActive);
   paint(); void refresh();
-  window.setInterval(refreshWhenActive, 5_000);
+  window.setInterval(refreshWhenActive, 30_000);
 }
