@@ -74,6 +74,7 @@ const COPY = {
     currencyTitle: 'Kira Riyal & Ringgit', currencyIntro: 'Kalkulator ringkas yang boleh digunakan tanpa internet. Masukkan kadar semasa daripada bank atau pengurup wang yang anda percayai.',
     rateLabel: 'Kadar: 1 SAR = berapa MYR?', amountLabel: 'Jumlah', resultLabel: 'Anggaran', sarToMyr: 'SAR → MYR', myrToSar: 'MYR → SAR',
     rateHelp: 'Kadar ini disimpan pada telefon. Semak dan kemas kini apabila kadar berubah.',
+    toolsTitle: 'ALAT PERJALANAN', toolsHint: 'Akses alat penting tanpa memenuhi skrin.', offlineCardTool: 'KAD OFFLINE', offlineMapTool: 'PETA OFFLINE', readinessTool: 'PERSEDIAAN', remindersTool: 'PERINGATAN',
   },
   en: {
     subtitle: 'Pilgrim safety • Senior friendly', hello: 'Welcome', need: 'What do you need?',
@@ -98,6 +99,7 @@ const COPY = {
     currencyTitle: 'Riyal & Ringgit Calculator', currencyIntro: 'A simple calculator that works offline. Enter the current rate from a bank or money changer you trust.',
     rateLabel: 'Rate: 1 SAR equals how many MYR?', amountLabel: 'Amount', resultLabel: 'Estimate', sarToMyr: 'SAR → MYR', myrToSar: 'MYR → SAR',
     rateHelp: 'This rate is stored on your phone. Check and update it when exchange rates change.',
+    toolsTitle: 'TRAVEL TOOLS', toolsHint: 'Open useful tools without cluttering the screen.', offlineCardTool: 'OFFLINE CARD', offlineMapTool: 'OFFLINE MAP', readinessTool: 'READINESS', remindersTool: 'REMINDERS',
   },
   ar: {
     subtitle: 'سلامة الحجاج والمعتمرين • مناسب لكبار السن', hello: 'السلام عليكم', need: 'ماذا تحتاج؟', hint: 'اضغط على زر واحد فقط. المعلومات المهمة محفوظة على هذا الهاتف.',
@@ -120,6 +122,7 @@ const COPY = {
     currencyTitle: 'حاسبة الريال والرينغيت', currencyIntro: 'حاسبة بسيطة تعمل دون اتصال. أدخل سعر الصرف الحالي من بنك أو صراف تثق به.',
     rateLabel: 'السعر: 1 ريال سعودي يساوي كم رينغيت؟', amountLabel: 'المبلغ', resultLabel: 'التقدير', sarToMyr: 'SAR → MYR', myrToSar: 'MYR → SAR',
     rateHelp: 'يتم حفظ السعر على هاتفك. تحقق منه وحدثه عند تغير سعر الصرف.',
+    toolsTitle: 'أدوات السفر', toolsHint: 'افتح الأدوات المهمة دون ازدحام الشاشة.', offlineCardTool: 'البطاقة دون اتصال', offlineMapTool: 'الخريطة دون اتصال', readinessTool: 'الاستعداد', remindersTool: 'التذكيرات',
   },
 } as const;
 
@@ -374,6 +377,10 @@ export default function App() {
     </section>
   );
 
+  const openUtility = (selector: string) => {
+    document.querySelector<HTMLButtonElement>(selector)?.click();
+  };
+
   const back = <button type="button" className="back" onClick={() => setPage('home')}><ArrowLeft size={22} /> {t.back}</button>;
 
   const bottomNav = <nav className="teman-bottom-nav" aria-label="TEMAN navigation">
@@ -406,6 +413,15 @@ export default function App() {
         <button type="button" className="action" onClick={openHotel}><Building2 size={28}/><div><strong>{t.hotel}</strong><span>{hotel || t.hotelHint}</span></div><b aria-hidden="true">→</b></button>
         <button type="button" className="action" onClick={() => { setEmergencyKind('bus'); setPage('emergency'); }}><UsersRound size={28}/><div><strong>{t.group}</strong><span>{profile.groupCode || profile.busNumber || t.groupHint}</span></div><b aria-hidden="true">→</b></button>
       </div>
+      <section className="mobileUtilityPanel" aria-label={t.toolsTitle}>
+        <div className="mobileUtilityHead"><strong>{t.toolsTitle}</strong><span>{t.toolsHint}</span></div>
+        <div className="mobileUtilityGrid">
+          <button type="button" onClick={() => openUtility('.temanOfflineCardTrigger')}><ShieldCheck size={22}/><span>{t.offlineCardTool}</span></button>
+          <button type="button" onClick={() => openUtility('.temanOfflineMapTrigger')}><MapPin size={22}/><span>{t.offlineMapTool}</span></button>
+          <button type="button" onClick={() => openUtility('.travelReadinessTrigger')}><CheckCircle2 size={22}/><span>{t.readinessTool}</span></button>
+          <button type="button" onClick={() => openUtility('.temanReminderTrigger')}><NotebookPen size={22}/><span>{t.remindersTool}</span></button>
+        </div>
+      </section>
       <div className="grid featureGrid">
         <button type="button" className="feature translateFeature" onClick={() => setPage('translate')}><Languages/><strong>{t.translate}</strong><span>{t.translateHint}</span></button>
         <button type="button" className="feature ibadahFeature" onClick={() => setPage('ibadah')}><UserRound/><strong>{t.ibadah}</strong><span>{t.ibadahHint}</span></button>
