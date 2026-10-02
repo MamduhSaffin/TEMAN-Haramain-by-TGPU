@@ -1,4 +1,4 @@
-const CACHE = 'teman-shell-v5';
+const CACHE = 'teman-shell-v6';
 const MAP_CACHE = 'teman-map-packs-v1';
 const CORE = ['/', '/manifest.webmanifest', '/teman-icon.svg?v=3'];
 
@@ -52,6 +52,11 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
+
+  // Family Link API responses are dynamic and can contain private status data.
+  // Keep /api requests entirely outside CacheStorage so credentials/status are never
+  // replayed from the offline shell cache.
+  if (url.pathname.startsWith('/api/')) return;
 
   if (url.pathname.startsWith('/maps/') && url.pathname.endsWith('.pmtiles')) {
     event.respondWith(
