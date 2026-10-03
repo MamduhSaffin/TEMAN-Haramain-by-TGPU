@@ -14,6 +14,7 @@ import { initFamilyLink } from './family-link';
 import { initFamilyLinkShortcut } from './family-link-shortcut';
 import { initFamilySmsFallback } from './family-sms';
 import { initOfflineEmergencyCard } from './offline-card';
+import { initOperatorPilotPage } from './operator-pilot';
 import { isFamilyViewRoute, renderFamilyView } from './family-view';
 import { runStorageMigrations } from './storage-migrations';
 import './styles.css';
@@ -32,6 +33,7 @@ import './family-link-shortcut.css';
 import './family-sms.css';
 import './offline-card.css';
 import './offline-map.css';
+import './operator-pilot.css';
 
 const rootElement = document.getElementById('root')!;
 const MAP_PACK_CACHE = 'teman-map-packs-v1';
@@ -129,6 +131,7 @@ if (isFamilyViewRoute()) {
   initFamilyLinkShortcut();
   initFamilySmsFallback();
   initOfflineEmergencyCard();
+  initOperatorPilotPage();
   initLazyOfflineMap();
   warmOfflineMapEngineForSavedPacks();
 }
