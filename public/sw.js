@@ -1,4 +1,4 @@
-const CACHE = 'teman-shell-v7';
+const CACHE = 'teman-shell-v9';
 const MAP_CACHE = 'teman-map-packs-v1';
 const CORE = ['/', '/manifest.webmanifest', '/teman-icon.svg?v=3'];
 
