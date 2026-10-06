@@ -14,7 +14,7 @@ export async function familyStatus(request: HttpRequest, _context: InvocationCon
   if (!familyStorageConfigured()) return jsonResponse(503, { ok: false, configurationRequired: true });
 
   const familyId = safeText(request.query.get('family'), 64);
-  const viewerToken = safeText(request.query.get('token'), 128);
+  const viewerToken = safeText(request.headers.get('x-teman-viewer-token') || request.query.get('token'), 128);
   if (!familyId || !viewerToken) return jsonResponse(400, { ok: false, message: 'Missing Family Link credentials.' });
 
   try {
