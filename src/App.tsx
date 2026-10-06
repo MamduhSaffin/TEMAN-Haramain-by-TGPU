@@ -393,7 +393,7 @@ export default function App() {
 
   return <div className="shell" dir={rtl ? 'rtl' : 'ltr'}>
     <header className="topbar">
-      <div className="brand"><div className="mark" aria-hidden="true">T</div><div><strong>TEMAN Haramain</strong><span>by TGPU</span></div></div>
+      <div className="brand"><button type="button" className="mark" onClick={() => setPage('home')} aria-label={locale === 'ar' ? 'الصفحة الرئيسية' : locale === 'en' ? 'Home' : 'Utama'}><span aria-hidden="true">T</span></button><div><strong>TEMAN Haramain</strong><span>by TGPU</span></div></div>
       <div className="langs" aria-label="Language selector">
         <button type="button" aria-pressed={locale === 'ms'} className={locale === 'ms' ? 'active' : ''} onClick={() => setLang('ms')}>BM</button>
         <button type="button" aria-pressed={locale === 'ar'} className={locale === 'ar' ? 'active' : ''} onClick={() => setLang('ar')}>العربية</button>
