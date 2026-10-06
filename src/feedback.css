@@ -1,13 +1,24 @@
 .temanFeedbackTrigger{position:fixed;right:14px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:9000;min-height:48px;padding:0 16px;border:0;border-radius:999px;background:#0b6e4f;color:#fff;font:inherit;font-weight:800;box-shadow:0 8px 24px rgba(0,0,0,.2);cursor:pointer}
 html[dir="rtl"] .temanFeedbackTrigger{right:auto;left:14px}
-.temanFeedbackOverlay{position:fixed;inset:0;z-index:12000;background:rgba(5,45,33,.7);display:grid;place-items:end center;padding:10px}
-.temanFeedbackModal{position:relative;width:min(100%,480px);max-height:calc(100dvh - 20px);overflow:auto;background:#fffdf8;border-radius:26px;padding:22px;color:#17352b;box-shadow:0 20px 60px rgba(0,0,0,.28)}
-.temanFeedbackModal h2{margin:0 44px 6px 0;font-size:24px;line-height:1.2}.temanFeedbackModal[dir="rtl"] h2{margin:0 0 6px 44px}
-.temanFeedbackIntro{margin:0 0 10px;font-size:14px;line-height:1.5;color:#5f6f68}.temanFeedbackEmergency{margin:0 0 14px;padding:10px 12px;border-radius:12px;background:#fff4dd;color:#6d4c00;font-size:13px;line-height:1.45;font-weight:700}
-.temanFeedbackClose{position:absolute;right:12px;top:12px;width:44px;height:44px;border:0;border-radius:50%;background:#f1f5f3;font-size:26px;color:#4c5d56}.temanFeedbackModal[dir="rtl"] .temanFeedbackClose{right:auto;left:12px}
-.temanFeedbackModal form{display:grid;gap:13px}.temanFeedbackModal label{display:grid;gap:6px;font-size:14px;font-weight:800}.temanFeedbackModal input,.temanFeedbackModal select,.temanFeedbackModal textarea{width:100%;box-sizing:border-box;min-height:50px;border:1px solid #cadbd3;border-radius:14px;background:#fff;padding:11px 12px;font:inherit;font-size:16px;color:#17352b}.temanFeedbackModal textarea{min-height:120px;resize:vertical}.temanFeedbackModal label small{font-size:12px;font-weight:500;color:#66766f}
+.temanFeedbackOverlay{position:fixed;inset:0;z-index:12000;background:rgba(5,45,33,.7);display:grid;place-items:center;padding:calc(10px + env(safe-area-inset-top)) 10px calc(10px + env(safe-area-inset-bottom))}
+.temanFeedbackModal{position:relative;width:min(100%,460px);max-height:min(720px,calc(100dvh - 20px - env(safe-area-inset-top) - env(safe-area-inset-bottom)));overflow:auto;overscroll-behavior:contain;background:#fffdf8;border-radius:22px;padding:18px 18px 16px;color:#17352b;box-shadow:0 20px 60px rgba(0,0,0,.28);scrollbar-gutter:stable}
+.temanFeedbackModal h2{margin:0 52px 4px 0;font-size:22px;line-height:1.2}.temanFeedbackModal[dir="rtl"] h2{margin:0 0 4px 52px}
+.temanFeedbackIntro{margin:0 0 8px;font-size:13px;line-height:1.45;color:#5f6f68}.temanFeedbackEmergency{margin:0 0 10px;padding:8px 10px;border-radius:10px;background:#fff4dd;color:#6d4c00;font-size:12px;line-height:1.4;font-weight:700}
+.temanFeedbackClose{position:sticky;float:right;right:0;top:0;z-index:5;width:48px;height:48px;margin:-4px -4px 0 8px;border:0;border-radius:50%;background:#eef4f0;box-shadow:0 3px 10px rgba(0,0,0,.12);font-size:30px;line-height:1;color:#2f473d;cursor:pointer}.temanFeedbackModal[dir="rtl"] .temanFeedbackClose{float:left;margin:-4px 8px 0 -4px}
+.temanFeedbackModal form{display:grid;gap:10px}.temanFeedbackModal label{display:grid;gap:5px;font-size:13px;font-weight:800}.temanFeedbackModal input,.temanFeedbackModal select,.temanFeedbackModal textarea{width:100%;box-sizing:border-box;min-height:46px;border:1px solid #cadbd3;border-radius:12px;background:#fff;padding:9px 10px;font:inherit;font-size:16px;color:#17352b}.temanFeedbackModal textarea{min-height:92px;resize:vertical}.temanFeedbackModal label small{font-size:12px;font-weight:500;color:#66766f}
 .temanFeedbackCheck{grid-template-columns:26px 1fr!important;align-items:center;gap:10px!important;padding:10px 0}.temanFeedbackCheck input{width:22px!important;height:22px!important;min-height:0!important}.temanFeedbackStatus{min-height:22px;font-size:13px;line-height:1.45;color:#42554d}.temanFeedbackSubmit{min-height:54px;border:0;border-radius:15px;background:#0b6e4f;color:#fff;font:inherit;font-size:16px;font-weight:900}.temanFeedbackSubmit:disabled{opacity:.55}
 .temanFeedbackHp{position:absolute!important;left:-9999px!important;width:1px!important;height:1px!important;opacity:0!important}
 @media(min-width:600px){.temanFeedbackOverlay{place-items:center}.temanFeedbackModal{max-height:min(780px,calc(100dvh - 40px))}}
 @media(max-width:360px){.temanFeedbackTrigger{right:10px;bottom:calc(78px + env(safe-area-inset-bottom));padding:0 12px}.temanFeedbackModal{padding:18px;border-radius:22px}}
 @media(prefers-reduced-motion:reduce){.temanFeedbackTrigger,.temanFeedbackModal{scroll-behavior:auto}}
+
+@media(max-width:480px){
+  .temanFeedbackOverlay{align-items:center;padding-left:8px;padding-right:8px}
+  .temanFeedbackModal{width:100%;max-height:calc(100dvh - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom));border-radius:18px;padding:14px}
+  .temanFeedbackModal h2{font-size:20px}
+  .temanFeedbackClose{width:50px;height:50px;font-size:32px}
+  .temanFeedbackSubmit{min-height:50px}
+}
+@supports (-webkit-touch-callout:none){
+  .temanFeedbackModal{max-height:calc(100dvh - 18px - env(safe-area-inset-top) - env(safe-area-inset-bottom))}
+}
