@@ -205,7 +205,7 @@ function openFeedback() {
     const message = String(fd.get('message') || '').trim();
     if (message.length < 3) { status.textContent = t.needMessage; return; }
 
-    const location = inSaudi.checked ? String(fd.get('location_context_optional') || 'other') : null;
+    const locationContext = inSaudi.checked ? String(fd.get('location_context_optional') || 'other') : null;
     const payload: FeedbackPayload = {
       client_submission_id: uuid(),
       app_name: 'teman',
@@ -220,7 +220,7 @@ function openFeedback() {
       page_url: `${location.origin}${location.pathname}`,
       route: location.pathname,
       app_version: APP_VERSION,
-      location_context_optional: location as FeedbackPayload['location_context_optional'],
+      location_context_optional: locationContext as FeedbackPayload['location_context_optional'],
       rating_optional: null,
       context: {
         current_pilgrim: inSaudi.checked,
