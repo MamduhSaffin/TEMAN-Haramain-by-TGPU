@@ -180,7 +180,7 @@ export function initSaudiEmergency() {
 
     const t = COPY[locale()]; section.querySelector<HTMLElement>('[data-title]')!.textContent = t.title; section.querySelector<HTMLElement>('[data-intro]')!.textContent = t.intro; section.querySelector<HTMLElement>('[data-official]')!.textContent = t.official;
     (['unified', 'ambulance', 'police', 'civil', 'health'] as const).forEach(service => { const b = section!.querySelector<HTMLButtonElement>(`[data-service="${service}"]`)!; b.querySelector('strong')!.textContent = t[service]; b.querySelector('span')!.textContent = t[`${service}Hint` as keyof typeof t]; });
-    section.querySelector<HTMLButtonElement>('[data-service="unified"]')!.hidden = city() !== 'makkah';
+    section.querySelector<HTMLButtonElement>('[data-service="unified"]')!.hidden = false;
 
     let tools = page.querySelector<HTMLElement>('.fieldTools');
     if (!tools) {
