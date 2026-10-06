@@ -107,7 +107,8 @@ jobs:
           curl --silent --show-error --location --max-time 20 \
             --dump-header /tmp/teman-status-headers.txt \
             --output /tmp/teman-status-body.json \
-            "$BASE/api/family/status?family=production-smoke-check&token=invalid" || true
+            -H 'x-teman-viewer-token: invalid' \
+            "$BASE/api/family/status?family=production-smoke-check" || true
           grep -Eiq '^cache-control:.*no-store' /tmp/teman-status-headers.txt
 
           CHROME="$(command -v google-chrome || command -v google-chrome-stable || true)"
