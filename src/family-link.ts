@@ -162,7 +162,7 @@ export function initFamilyLink() {
       const lang = locale();
       cloud = {
         familyId:body.familyId, writeToken:body.writeToken, viewerToken:body.viewerToken,
-        viewerUrl:`${window.location.origin}/?family=${encodeURIComponent(body.familyId)}&token=${encodeURIComponent(body.viewerToken)}&lang=${lang}`,
+        viewerUrl:`${window.location.origin}/?family=${encodeURIComponent(body.familyId)}&lang=${lang}#token=${encodeURIComponent(body.viewerToken)}`,
         createdAt:Date.now(),
       };
       saveCloud(); message = t().cloudActive; await flushPending();
