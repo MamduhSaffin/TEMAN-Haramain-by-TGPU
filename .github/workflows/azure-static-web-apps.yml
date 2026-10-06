@@ -89,7 +89,7 @@ jobs:
           }
 
           fetch_with_retry "$BASE/release.html" /tmp/teman-release.html
-          grep -Fq 'teman-v9-feedback-home-2026-10-07' /tmp/teman-release.html
+          grep -Fq 'teman-v10-feedback-mobile-2026-10-07' /tmp/teman-release.html
 
           fetch_with_retry "$BASE/" /tmp/teman-index.html
           grep -Fq '<title>TEMAN Haramain — Hajj & Umrah Safety Companion | TGPU</title>' /tmp/teman-index.html
@@ -104,7 +104,7 @@ jobs:
           grep -Fq '<loc>https://teman.tgpu.my/</loc>' /tmp/teman-sitemap.xml
 
           fetch_with_retry "$BASE/sw.js" /tmp/teman-sw.js
-          grep -Fq "const CACHE = 'teman-shell-v9';" /tmp/teman-sw.js
+          grep -Fq "const CACHE = 'teman-shell-v10';" /tmp/teman-sw.js
           grep -Fq "url.pathname.startsWith('/api/')" /tmp/teman-sw.js
 
           curl --silent --show-error --location --max-time 20 \
