@@ -3,6 +3,15 @@ import { channelTable, familyStorageConfigured, safeText, statusTable, tokenMatc
 
 const ALLOWED = new Set(['safe', 'with-group', 'at-hotel', 'need-contact']);
 
+const NO_STORE_HEADERS = {
+  'Cache-Control': 'no-store, max-age=0',
+  Pragma: 'no-cache',
+};
+
+function jsonResponse(status: number, jsonBody: unknown): HttpResponseInit {
+  return { status, headers: NO_STORE_HEADERS, jsonBody };
+}
+
 type Body = {
   familyId?: string;
   writeToken?: string;
@@ -19,23 +28,23 @@ type Body = {
 };
 
 export async function familyCheckIn(request: HttpRequest, _context: InvocationContext): Promise<HttpResponseInit> {
-  if (!familyStorageConfigured()) return { status: 503, jsonBody: { ok: false, configurationRequired: true } };
+  if (!familyStorageConfigured()) return jsonResponse(503, { ok: false, configurationRequired: true });
 
   const body = await request.json() as Body;
   const familyId = safeText(body.familyId, 64);
   const writeToken = safeText(body.writeToken, 128);
   const checkIn = body.checkIn;
   if (!familyId || !writeToken || !checkIn || !ALLOWED.has(checkIn.status || '')) {
-    return { status: 400, jsonBody: { ok: false, message: 'Invalid check-in payload.' } };
+    return jsonResponse(400, { ok: false, message: 'Invalid check-in payload.' });
   }
 
   try {
     const channels = await channelTable();
     const channel = await channels.getEntity<{ writeTokenHash: string }>('channel', familyId);
-    if (!tokenMatches(writeToken, String(channel.writeTokenHash || ''))) return { status: 403, jsonBody: { ok: false, message: 'Invalid Family Link credentials.' } };
+    if (!tokenMatches(writeToken, String(channel.writeTokenHash || ''))) return jsonResponse(403, { ok: false, message: 'Invalid Family Link credentials.' });
   } catch (error) {
     const statusCode = (error as { statusCode?: number }).statusCode;
-    if (statusCode === 404) return { status: 404, jsonBody: { ok: false, message: 'Family Link not found.' } };
+    if (statusCode === 404) return jsonResponse(404, { ok: false, message: 'Family Link not found.' });
     throw error;
   }
 
@@ -55,7 +64,7 @@ export async function familyCheckIn(request: HttpRequest, _context: InvocationCo
     updatedAt: Date.now(),
   }, 'Replace');
 
-  return { status: 200, jsonBody: { ok: true, syncedAt: Date.now() } };
+  return jsonResponse(200, { ok: true, syncedAt: Date.now() });
 }
 
 app.http('familyCheckIn', {
