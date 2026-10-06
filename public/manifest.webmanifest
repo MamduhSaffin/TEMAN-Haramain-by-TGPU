@@ -9,8 +9,12 @@
   "background_color": "#F3F7F4",
   "theme_color": "#0B5D3B",
   "lang": "ms",
-  "description": "Safety-first Hajj & Umrah companion for Malaysian pilgrims and families.",
-  "categories": ["travel", "utilities", "lifestyle"],
+  "description": "Safety-first, senior-friendly Hajj & Umrah companion in Malay, Arabic and English.",
+  "categories": [
+    "travel",
+    "utilities",
+    "lifestyle"
+  ],
   "icons": [
     {
       "src": "/teman-icon.svg?v=3",
