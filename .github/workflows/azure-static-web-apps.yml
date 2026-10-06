@@ -88,6 +88,9 @@ jobs:
             return 1
           }
 
+          fetch_with_retry "$BASE/release.html" /tmp/teman-release.html
+          grep -Fq 'teman-v7-safety-privacy-2026-10-07' /tmp/teman-release.html
+
           fetch_with_retry "$BASE/" /tmp/teman-index.html
           grep -Fq '<title>TEMAN Haramain — Hajj & Umrah Safety Companion | TGPU</title>' /tmp/teman-index.html
 
