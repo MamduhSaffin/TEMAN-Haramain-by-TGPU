@@ -131,6 +131,7 @@ if (isFamilyViewRoute()) {
   initFamilyLinkShortcut();
   initFamilySmsFallback();
   initOfflineEmergencyCard();
+  initTemanFeedback();
   initLazyOfflineMap();
   warmOfflineMapEngineForSavedPacks();
 }
