@@ -15,7 +15,7 @@ import { initFamilyLinkShortcut } from './family-link-shortcut';
 import { initFamilySmsFallback } from './family-sms';
 import { initOfflineEmergencyCard } from './offline-card';
 import { isFamilyViewRoute, renderFamilyView } from './family-view';
-import { runStorageMigrations } from './storage-migrations';
+import { runStorageMigrations } from './storage-migrations';\nimport { initTemanFeedback } from './feedback';
 import './styles.css';
 import './safe-area.css';
 import './brand-logo.css';
@@ -31,7 +31,7 @@ import './family-link.css';
 import './family-link-shortcut.css';
 import './family-sms.css';
 import './offline-card.css';
-import './offline-map.css';
+import './offline-map.css';\nimport './feedback.css';
 
 const rootElement = document.getElementById('root')!;
 const MAP_PACK_CACHE = 'teman-map-packs-v1';
