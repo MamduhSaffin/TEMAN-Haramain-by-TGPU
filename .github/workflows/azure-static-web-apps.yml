@@ -104,7 +104,7 @@ jobs:
           grep -Fq '<loc>https://teman.tgpu.my/</loc>' /tmp/teman-sitemap.xml
 
           fetch_with_retry "$BASE/sw.js" /tmp/teman-sw.js
-          grep -Fq "const CACHE = 'teman-shell-v7';" /tmp/teman-sw.js
+          grep -Fq "const CACHE = 'teman-shell-v9';" /tmp/teman-sw.js
           grep -Fq "url.pathname.startsWith('/api/')" /tmp/teman-sw.js
 
           curl --silent --show-error --location --max-time 20 \
