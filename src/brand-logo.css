@@ -78,3 +78,19 @@
 
 [dir='rtl'] .notesCard textarea{text-align:right}
 [dir='rtl'] .amountInput input{text-align:right}
+
+/* v9 — TEMAN mark is a persistent home control */
+.brand button.mark{
+  appearance:none;
+  -webkit-appearance:none;
+  border:0;
+  padding:0;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.brand button.mark>span{color:transparent;font-size:0}
+.brand button.mark:focus-visible{
+  outline:3px solid #f0c85a;
+  outline-offset:3px;
+}
+.brand button.mark:active{transform:scale(.97)}
