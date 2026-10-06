@@ -27,16 +27,31 @@ function localeFromParams(params: URLSearchParams): Locale {
 function escapeHtml(value: string) { return value.replace(/[&<>'"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[c] || c)); }
 function formatTime(value: number, lang: Locale) { return new Date(value).toLocaleString(lang === 'ar' ? 'ar-SA' : lang === 'en' ? 'en-GB' : 'ms-MY', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }); }
 
+function fragmentParams() {
+  return new URLSearchParams(window.location.hash.replace(/^#/, ''));
+}
+
 export function isFamilyViewRoute() {
   const params = new URLSearchParams(window.location.search);
-  return Boolean(params.get('family') || params.get('token'));
+  const fragment = fragmentParams();
+  return Boolean(params.get('family') || params.get('token') || fragment.get('token'));
 }
 
 export function renderFamilyView(root: HTMLElement) {
   const params = new URLSearchParams(window.location.search);
+  const fragment = fragmentParams();
   const familyId = params.get('family') || '';
-  const token = params.get('token') || '';
+  const token = fragment.get('token') || params.get('token') || '';
   const lang = localeFromParams(params);
+
+  // Backward compatibility: immediately move legacy query tokens into the
+  // URL fragment so subsequent same-origin requests and referrers do not carry them.
+  if (params.get('token') && token) {
+    const clean = new URL(window.location.href);
+    clean.searchParams.delete('token');
+    clean.hash = `token=${encodeURIComponent(token)}`;
+    window.history.replaceState(null, '', clean.toString());
+  }
   const t = COPY[lang];
   document.documentElement.lang = lang;
   document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
@@ -75,7 +90,7 @@ export function renderFamilyView(root: HTMLElement) {
     if (!navigator.onLine) { message = t.offline; paint(); return; }
     refreshing = true; paint();
     try {
-      const response = await fetch(`/api/family/status?family=${encodeURIComponent(familyId)}&token=${encodeURIComponent(token)}`, { cache:'no-store' });
+      const response = await fetch(`/api/family/status?family=${encodeURIComponent(familyId)}`, { cache:'no-store', headers:{'x-teman-viewer-token': token} });
       const body = await response.json().catch(() => ({})) as { latest?: FamilyStatus | null; configurationRequired?: boolean; message?: string };
       if (!response.ok) {
         if (response.status === 403 || response.status === 404) { inactive = true; message = t.inactive; }
