@@ -135,16 +135,16 @@ const PHRASES = [
 
 const EMERGENCY_MESSAGES: Record<EmergencyKind, { ar: string; en: string }> = {
   lost: {
-    ar: 'أنا حاج أو معتمر من ماليزيا وقد ضللت عن مجموعتي. الرجاء مساعدتي في العودة إلى فندقي والتواصل مع مسؤول مجموعتي.',
-    en: 'I am a Malaysian pilgrim and I am separated from my group. Please help me return to my hotel and contact my group leader.',
+    ar: 'أنا حاج أو معتمر وقد ضللت عن مجموعتي. الرجاء مساعدتي في العودة إلى فندقي والتواصل مع مسؤول مجموعتي.',
+    en: 'I am a pilgrim and I am separated from my group. Please help me return to my hotel and contact my group leader.',
   },
   unwell: {
-    ar: 'أنا حاج أو معتمر من ماليزيا وأشعر بتوعك. الرجاء مساعدتي في الحصول على مساعدة طبية والتواصل مع مسؤول مجموعتي.',
-    en: 'I am a Malaysian pilgrim and I feel unwell. Please help me get medical assistance and contact my group leader.',
+    ar: 'أنا حاج أو معتمر وأشعر بتوعك. الرجاء مساعدتي في الحصول على مساعدة طبية والتواصل مع مسؤول مجموعتي.',
+    en: 'I am a pilgrim and I feel unwell. Please help me get medical assistance and contact my group leader.',
   },
   bus: {
-    ar: 'أنا حاج أو معتمر من ماليزيا ولم أجد حافلة مجموعتي. الرجاء مساعدتي في العثور على مجموعتي والتواصل مع مسؤولها.',
-    en: 'I am a Malaysian pilgrim and I cannot find my group bus. Please help me find my group and contact my group leader.',
+    ar: 'أنا حاج أو معتمر ولم أجد حافلة مجموعتي. الرجاء مساعدتي في العثور على مجموعتي والتواصل مع مسؤولها.',
+    en: 'I am a pilgrim and I cannot find my group bus. Please help me find my group and contact my group leader.',
   },
 };
 
