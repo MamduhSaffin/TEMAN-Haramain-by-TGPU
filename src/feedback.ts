@@ -1,6 +1,6 @@
 const SUPABASE_URL = 'https://mpidjwjghtpeybedmbkd.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_LUGX_-Co3zolt94Qaj9AQg_m2zidH68';
-const APP_VERSION = 'teman-v8-feedback-2026-10-07';
+const APP_VERSION = 'teman-v10-feedback-mobile-2026-10-07';
 const QUEUE_KEY = 'tgpu_feedback_queue_v1';
 
 type Lang = 'ms' | 'en' | 'ar';
@@ -189,6 +189,13 @@ function openFeedback() {
     </form>
   </div>`;
   document.body.appendChild(overlay);
+  const previousOverflow = document.body.style.overflow;
+  document.body.style.overflow = 'hidden';
+
+  const closeFeedback = () => {
+    overlay.remove();
+    document.body.style.overflow = previousOverflow;
+  };
 
   const form = overlay.querySelector<HTMLFormElement>('[data-teman-feedback-form]')!;
   const inSaudi = form.elements.namedItem('in_saudi') as HTMLInputElement;
@@ -270,7 +277,14 @@ export function initTemanFeedback() {
   document.addEventListener('click', (e) => {
     const target = e.target as HTMLElement;
     if (target.closest('[data-teman-feedback-close]') || target.matches('[data-teman-feedback-modal]')) {
-      document.querySelector('[data-teman-feedback-modal]')?.remove();
+      document.querySelector<HTMLElement>('[data-teman-feedback-modal]')?.remove();
+      document.body.style.overflow = '';
+    }
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.querySelector<HTMLElement>('[data-teman-feedback-modal]')?.remove();
+      document.body.style.overflow = '';
     }
   });
 
