@@ -88,34 +88,58 @@ jobs:
             return 1
           }
 
+          assert_contains() {
+            local label="$1"
+            local file="$2"
+            local expected="$3"
+            echo "Checking TEMAN production: $label"
+            if ! grep -Fq -- "$expected" "$file"; then
+              echo "::error title=TEMAN production smoke check failed::Missing expected marker: $label"
+              if [ "$label" = "release marker" ]; then
+                echo "Observed release marker:"
+                grep -oE 'teman-v[0-9][A-Za-z0-9_-]*' "$file" | head -n 1 || true
+              elif [ "$label" = "service-worker cache" ]; then
+                echo "Observed service-worker cache declaration:"
+                head -n 1 "$file"
+              fi
+              return 1
+            fi
+            echo "PASS: $label"
+          }
+
           fetch_with_retry "$BASE/release.html" /tmp/teman-release.html
-          grep -Fq 'teman-v10-feedback-mobile-2026-10-07' /tmp/teman-release.html
+          assert_contains "release marker" /tmp/teman-release.html 'teman-v10-feedback-mobile-2026-10-07'
 
           fetch_with_retry "$BASE/" /tmp/teman-index.html
-          grep -Fq '<title>TEMAN Haramain — Hajj & Umrah Safety Companion | TGPU</title>' /tmp/teman-index.html
+          assert_contains "homepage title" /tmp/teman-index.html '<title>TEMAN Haramain — Hajj & Umrah Safety Companion | TGPU</title>'
 
           fetch_with_retry "$BASE/manifest.webmanifest" /tmp/teman-manifest.json
-          grep -Fq '"name": "TEMAN Haramain by TGPU"' /tmp/teman-manifest.json
+          assert_contains "PWA manifest" /tmp/teman-manifest.json '"name": "TEMAN Haramain by TGPU"'
 
           fetch_with_retry "$BASE/robots.txt" /tmp/teman-robots.txt
-          grep -Fq 'Sitemap: https://teman.tgpu.my/sitemap.xml' /tmp/teman-robots.txt
+          assert_contains "robots.txt sitemap" /tmp/teman-robots.txt 'Sitemap: https://teman.tgpu.my/sitemap.xml'
 
           fetch_with_retry "$BASE/sitemap.xml" /tmp/teman-sitemap.xml
-          grep -Fq '<loc>https://teman.tgpu.my/</loc>' /tmp/teman-sitemap.xml
+          assert_contains "sitemap.xml origin" /tmp/teman-sitemap.xml '<loc>https://teman.tgpu.my/</loc>'
 
           fetch_with_retry "$BASE/sw.js" /tmp/teman-sw.js
-          grep -Fq "const CACHE = 'teman-shell-v10';" /tmp/teman-sw.js
-          grep -Fq "url.pathname.startsWith('/api/')" /tmp/teman-sw.js
+          assert_contains "service-worker cache" /tmp/teman-sw.js "const CACHE = 'teman-shell-v10';"
+          assert_contains "service-worker API bypass" /tmp/teman-sw.js "url.pathname.startsWith('/api/')"
 
           curl --silent --show-error --location --max-time 20 \
             --dump-header /tmp/teman-status-headers.txt \
             --output /tmp/teman-status-body.json \
             -H 'x-teman-viewer-token: invalid' \
             "$BASE/api/family/status?family=production-smoke-check" || true
-          grep -Eiq '^cache-control:.*no-store' /tmp/teman-status-headers.txt
+          echo "Checking TEMAN production: family API cache policy"
+          if ! grep -Eiq '^cache-control:.*no-store' /tmp/teman-status-headers.txt; then
+            echo "::error title=TEMAN production smoke check failed::Family API response lacks required cache-control no-store header"
+            exit 1
+          fi
+          echo "PASS: family API cache policy"
 
           CHROME="$(command -v google-chrome || command -v google-chrome-stable || true)"
-          test -n "$CHROME"
+          if [ -z "$CHROME" ]; then echo "::error::Headless Chrome is unavailable on this runner"; exit 1; fi
           QA_DIR="$RUNNER_TEMP/teman-live-qa"
           rm -rf "$QA_DIR"
           mkdir -p "$QA_DIR"
@@ -131,8 +155,8 @@ jobs:
           "$CHROME" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --hide-scrollbars \
             --window-size=390,844 --user-data-dir=/tmp/teman-chrome-mobile \
             --dump-dom "$BASE/" > "$QA_DIR/rendered-mobile.html"
-          grep -Fq 'BANTU SAYA SEKARANG' "$QA_DIR/rendered-mobile.html"
-          grep -Fq 'teman-bottom-nav' "$QA_DIR/rendered-mobile.html"
+          assert_contains "rendered mobile emergency CTA" "$QA_DIR/rendered-mobile.html" 'BANTU SAYA SEKARANG'
+          assert_contains "rendered mobile bottom navigation" "$QA_DIR/rendered-mobile.html" 'teman-bottom-nav'
 
       - name: Upload live QA screenshots
         if: always() && github.event_name == 'push' && github.ref == 'refs/heads/main'
