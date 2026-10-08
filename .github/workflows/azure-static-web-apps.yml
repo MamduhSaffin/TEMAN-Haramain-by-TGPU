@@ -123,7 +123,11 @@ jobs:
           assert_contains "sitemap.xml origin" /tmp/teman-sitemap.xml '<loc>https://teman.tgpu.my/</loc>'
 
           fetch_with_retry "$BASE/sw.js" /tmp/teman-sw.js
-          assert_contains "service-worker cache" /tmp/teman-sw.js "const CACHE = 'teman-shell-v10';"
+          # Compare the live service-worker cache identifier against the checked-in
+          # source. Release marker versions do not necessarily equal SW cache versions.
+          expected_sw_cache="$(head -n 1 public/sw.js)"
+          test -n "$expected_sw_cache"
+          assert_contains "service-worker cache" /tmp/teman-sw.js "$expected_sw_cache"
           assert_contains "service-worker API bypass" /tmp/teman-sw.js "url.pathname.startsWith('/api/')"
 
           curl --silent --show-error --location --max-time 20 \
