@@ -51,8 +51,8 @@ jobs:
           set -euo pipefail
           mkdir -p public/maps
           SATU_MAP_SHA="59ca2c8535b83b77e6f41ab80584e29cd5c05794"
-          curl --fail --location --retry 3 "https://raw.githubusercontent.com/MamduhSaffin/SATU/${SATU_MAP_SHA}/public/maps/makkah.pmtiles" --output public/maps/makkah.pmtiles
-          curl --fail --location --retry 3 "https://raw.githubusercontent.com/MamduhSaffin/SATU/${SATU_MAP_SHA}/public/maps/madinah.pmtiles" --output public/maps/madinah.pmtiles
+          curl --fail --location --retry 3 "https://raw.githubusercontent.com/tgpu-digital-ecosystem/SATU/${SATU_MAP_SHA}/public/maps/makkah.pmtiles" --output public/maps/makkah.pmtiles
+          curl --fail --location --retry 3 "https://raw.githubusercontent.com/tgpu-digital-ecosystem/SATU/${SATU_MAP_SHA}/public/maps/madinah.pmtiles" --output public/maps/madinah.pmtiles
           test -s public/maps/makkah.pmtiles
           test -s public/maps/madinah.pmtiles
           ls -lh public/maps/*.pmtiles
